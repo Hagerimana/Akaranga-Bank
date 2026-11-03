@@ -1,0 +1,162 @@
+@model AkarangaBankMvc.Web.ViewModels.NotificationListViewModel
+@{
+    ViewData["Title"] = "Centre de notifications";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0">Centre de notifications</h1>
+        <p class="text-muted mb-0">Suivi multicanal (Email, SMS, Push, SignalR) et réessais automatiques</p>
+    </div>
+    <div>
+        <form asp-action="Reessayer" method="post" class="d-inline">
+            <button type="submit" class="btn btn-outline-warning">
+                <i class="bi bi-arrow-repeat" aria-hidden="true"></i> Réessayer les échecs
+            </button>
+        </form>
+    </div>
+</div>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @msg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-5">
+                <label for="canal" class="form-label">Canal</label>
+                <select id="canal" name="canal" class="form-select">
+                    <option value="">Tous les canaux</option>
+                    <option value="Email" selected="@(Model.Canal == "Email")">Email (MailKit)</option>
+                    <option value="SMS" selected="@(Model.Canal == "SMS")">SMS</option>
+                    <option value="Push" selected="@(Model.Canal == "Push")">Push (FCM)</option>
+                    <option value="Interne" selected="@(Model.Canal == "Interne")">Interne (SignalR)</option>
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label for="statut" class="form-label">Statut</label>
+                <select id="statut" name="statut" class="form-select">
+                    <option value="">Tous les statuts</option>
+                    <option value="Envoye" selected="@(Model.Statut == "Envoye")">Envoyé</option>
+                    <option value="EnAttente" selected="@(Model.Statut == "EnAttente")">En attente</option>
+                    <option value="Echec" selected="@(Model.Statut == "Echec")">Échec</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-secondary w-100">
+                    <i class="bi bi-search" aria-hidden="true"></i> Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" role="table" aria-label="Journal des notifications">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Canal</th>
+                    <th scope="col">Destinataire</th>
+                    <th scope="col">Titre</th>
+                    <th scope="col">Statut</th>
+                    <th scope="col">Tentatives</th>
+                    <th scope="col">Date création</th>
+                    <th scope="col" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Notifications.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">
+                            Aucune notification enregistrée.
+                        </td>
+                    </tr>
+                }
+                @foreach (var n in Model.Notifications)
+                {
+                    var statutBadge = n.Statut switch
+                    {
+                        "Envoye" => "bg-success",
+                        "EnAttente" => "bg-warning text-dark",
+                        "Echec" => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+
+                    var canalIcon = n.Canal.ToUpperInvariant() switch
+                    {
+                        "EMAIL" => "bi-envelope",
+                        "SMS" => "bi-chat-dots",
+                        "PUSH" => "bi-bell",
+                        "INTERNE" or "SIGNALR" => "bi-broadcast",
+                        _ => "bi-send"
+                    };
+
+                    <tr>
+                        <td>
+                            <i class="bi @canalIcon me-1" aria-hidden="true"></i>
+                            <span class="badge bg-light text-dark border">@n.Canal</span>
+                        </td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(n.DestinataireEmail))
+                            {
+                                <div>@n.DestinataireEmail</div>
+                            }
+                            @if (!string.IsNullOrEmpty(n.DestinataireTelephone))
+                            {
+                                <div class="small text-muted">@n.DestinataireTelephone</div>
+                            }
+                            @if (n.Destinataire is not null)
+                            {
+                                <div class="small text-muted">@n.Destinataire.NomComplet</div>
+                            }
+                        </td>
+                        <td>
+                            <strong>@n.Titre</strong>
+                            <div class="small text-muted text-truncate" style="max-width: 320px;">@n.Message</div>
+                        </td>
+                        <td>
+                            <span class="badge @statutBadge">@n.Statut</span>
+                            @if (!string.IsNullOrEmpty(n.DerniereErreur))
+                            {
+                                <i class="bi bi-info-circle text-danger ms-1" title="@n.DerniereErreur"></i>
+                            }
+                        </td>
+                        <td>@n.NombreTentatives</td>
+                        <td>@n.DateCreation.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@n.Id" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <span class="small text-muted">Total : @Model.TotalItems notification(s)</span>
+            <ul class="pagination pagination-sm m-0">
+                @for (int p = 1; p <= Model.TotalPages; p++)
+                {
+                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-page="@p"
+                           asp-route-canal="@Model.Canal"
+                           asp-route-statut="@Model.Statut">@p</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+

@@ -1,0 +1,72 @@
+@model AkarangaBankMvc.Web.ViewModels.BalanceGeneraleViewModel
+@{
+    ViewData["Title"] = "Balance Générale des Comptes";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0">Balance Générale des Comptes</h1>
+        <p class="text-muted mb-0">Arrêté au @Model.DateArrete.ToString("dd/MM/yyyy HH:mm") UTC — Contrôle de concordance comptable</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="ExportBalance" class="btn btn-outline-success">
+            <i class="bi bi-file-earmark-excel me-1"></i> Export Excel / CSV
+        </a>
+        <button onclick="window.print()" class="btn btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i> Imprimer
+        </button>
+    </div>
+</div>
+
+<div class="alert @(Model.EstEquilibree ? "alert-success" : "alert-danger") d-flex align-items-center justify-content-between mb-4" role="alert">
+    <div>
+        <i class="bi @(Model.EstEquilibree ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") fs-4 me-2"></i>
+        <strong>Contrôle réglementaire :</strong>
+        @(Model.EstEquilibree ? "La balance générale est parfaitement équilibrée (Total Débits = Total Crédits)." : "Attention : La balance présente un déséquilibre !")
+    </div>
+    <span class="badge @(Model.EstEquilibree ? "bg-success" : "bg-danger") fs-6">
+        @(Model.EstEquilibree ? "Conforme BRB" : "Déséquilibrée")
+    </span>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle mb-0" role="table" aria-label="Balance générale">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">N° Compte</th>
+                    <th scope="col">Intitulé</th>
+                    <th scope="col">Type</th>
+                    <th scope="col" class="text-end">Total Débits</th>
+                    <th scope="col" class="text-end">Total Crédits</th>
+                    <th scope="col" class="text-end">Solde Débiteur</th>
+                    <th scope="col" class="text-end">Solde Créditeur</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var l in Model.Lignes)
+                {
+                    <tr>
+                        <td><strong>@l.NumeroCompte</strong></td>
+                        <td>@l.Intitule</td>
+                        <td><span class="badge bg-light text-dark border">@l.TypeCompte</span></td>
+                        <td class="text-end">@l.TotalDebits.ToString("N2")</td>
+                        <td class="text-end">@l.TotalCredits.ToString("N2")</td>
+                        <td class="text-end text-danger fw-semibold">@(l.SoldeDebiteur > 0 ? l.SoldeDebiteur.ToString("N2") : "—")</td>
+                        <td class="text-end text-success fw-semibold">@(l.SoldeCrediteur > 0 ? l.SoldeCrediteur.ToString("N2") : "—")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="table-light border-top border-2 border-dark fw-bold">
+                <tr>
+                    <th colspan="3" class="text-end">TOTAUX GÉNÉRAUX :</th>
+                    <th class="text-end">@Model.TotalDebits.ToString("N2")</th>
+                    <th class="text-end">@Model.TotalCredits.ToString("N2")</th>
+                    <th class="text-end text-danger">@Model.TotalSoldesDebiteurs.ToString("N2")</th>
+                    <th class="text-end text-success">@Model.TotalSoldesCrediteurs.ToString("N2")</th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+

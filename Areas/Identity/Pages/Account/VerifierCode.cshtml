@@ -1,0 +1,44 @@
+@page
+@model VerifierCodeModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Vérification du code";
+    ViewData["Subtitle"] = $"Saisissez le code à 6 chiffres envoyé à {Model.EmailMasque}. " +
+        "Il est valable 10 minutes.";
+}
+
+<partial name="Manage/_StatusMessage" for="StatusMessage" />
+
+<form method="post" asp-page-handler="Verifier">
+    <div asp-validation-summary="ModelOnly" class="text-danger login-validation" role="alert"></div>
+
+    <div class="mb-4">
+        <label asp-for="Input.Code" class="form-label login-label">Code de vérification</label>
+
+        <input asp-for="Input.Code" type="text" inputmode="numeric" pattern="[0-9]{6}"
+               maxlength="6" autocomplete="one-time-code" class="form-control login-input"
+               placeholder="123456" required autofocus
+               style="letter-spacing:.45em;font-size:1.35rem;text-align:center;" />
+
+        <span asp-validation-for="Input.Code" class="text-danger small"></span>
+    </div>
+
+    <button type="submit" class="login-submit">
+        Vérifier le code
+        <span aria-hidden="true">→</span>
+    </button>
+
+    <p class="login-help">
+        <a asp-page="./MotDePasseOublie">Changer d'adresse email</a>
+        <span aria-hidden="true">·</span>
+        <a asp-page="./Login">Connexion</a>
+    </p>
+</form>
+
+<form method="post" asp-page-handler="Renvoyer" class="mt-3 text-center">
+    <button type="submit" class="btn btn-link p-0">Renvoyer un code</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

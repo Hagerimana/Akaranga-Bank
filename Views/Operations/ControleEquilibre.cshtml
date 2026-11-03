@@ -1,0 +1,24 @@
+@{
+    ViewData["Title"] = "Contrôle d'équilibre";
+
+    var ok = (bool)(ViewBag.Equilibre ?? false);
+}
+
+<h1>Contrôle d'équilibre comptable</h1>
+
+@if (ok)
+{
+    <div class="alert alert-success">
+        <h4>La comptabilité est équilibrée.</h4>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger">
+        <h4>Déséquilibre détecté.</h4>
+    </div>
+}
+
+<a asp-action="Journal" class="btn btn-secondary">
+    Retour au journal
+</a>

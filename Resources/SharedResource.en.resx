@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data xml:space="preserve" name="AppTitle">
+    <value>Akaranga Bank</value>
+  </data>
+  <data xml:space="preserve" name="Akaranga Bank">
+    <value>Akaranga Bank</value>
+  </data>
+  <data xml:space="preserve" name="BrandSub">
+    <value>Internal Portal</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Operations">
+    <value>Operations</value>
+  </data>
+  <data xml:space="preserve" name="Operations">
+    <value>Operations</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Dashboard">
+    <value>Dashboard</value>
+  </data>
+  <data xml:space="preserve" name="Dashboard">
+    <value>Dashboard</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Clients">
+    <value>Clients</value>
+  </data>
+  <data xml:space="preserve" name="Clients">
+    <value>Clients</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Comptes">
+    <value>Accounts</value>
+  </data>
+  <data xml:space="preserve" name="Comptes">
+    <value>Accounts</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Prets">
+    <value>Loans</value>
+  </data>
+  <data xml:space="preserve" name="Prets">
+    <value>Loans</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Cartes">
+    <value>Cards</value>
+  </data>
+  <data xml:space="preserve" name="Cartes">
+    <value>Cards</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Journal">
+    <value>General Journal</value>
+  </data>
+  <data xml:space="preserve" name="Journal">
+    <value>General Journal</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Virements">
+    <value>Inter-Branch Transfers</value>
+  </data>
+  <data xml:space="preserve" name="Virements">
+    <value>Inter-Branch Transfers</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Compensations">
+    <value>Clearing &amp; Settlement</value>
+  </data>
+  <data xml:space="preserve" name="Compensations">
+    <value>Clearing &amp; Settlement</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Conformite">
+    <value>Compliance</value>
+  </data>
+  <data xml:space="preserve" name="Conformite">
+    <value>Compliance</value>
+  </data>
+  <data xml:space="preserve" name="Nav_AlertesAML">
+    <value>AML Alerts</value>
+  </data>
+  <data xml:space="preserve" name="AlertesAML">
+    <value>AML Alerts</value>
+  </data>
+  <data xml:space="preserve" name="Nav_CNRF">
+    <value>STR Reports (CNRF)</value>
+  </data>
+  <data xml:space="preserve" name="CNRF">
+    <value>STR Reports (CNRF)</value>
+  </data>
+  <data xml:space="preserve" name="Nav_SeuilsAML">
+    <value>AML Thresholds</value>
+  </data>
+  <data xml:space="preserve" name="SeuilsAML">
+    <value>AML Thresholds</value>
+  </data>
+  <data xml:space="preserve" name="Nav_KYC">
+    <value>KYC Verifications</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Administration">
+    <value>Administration</value>
+  </data>
+  <data xml:space="preserve" name="Administration">
+    <value>Administration</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Utilisateurs">
+    <value>Users</value>
+  </data>
+  <data xml:space="preserve" name="Utilisateurs">
+    <value>Users</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Agences">
+    <value>Branches</value>
+  </data>
+  <data xml:space="preserve" name="Agences">
+    <value>Branches</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Audit">
+    <value>Audit Trail</value>
+  </data>
+  <data xml:space="preserve" name="Audit">
+    <value>Audit Trail</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Documents">
+    <value>Documents</value>
+  </data>
+  <data xml:space="preserve" name="Documents">
+    <value>Documents</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Notifications">
+    <value>Notifications</value>
+  </data>
+  <data xml:space="preserve" name="Notifications">
+    <value>Notifications</value>
+  </data>
+  <data xml:space="preserve" name="Nav_Reporting">
+    <value>Financial Reports</value>
+  </data>
+  <data xml:space="preserve" name="Reporting">
+    <value>Financial Reports</value>
+  </data>
+  <data xml:space="preserve" name="User_MyAccount">
+    <value>My Account</value>
+  </data>
+  <data xml:space="preserve" name="My Account">
+    <value>My Account</value>
+  </data>
+  <data xml:space="preserve" name="User_Logout">
+    <value>Log Out</value>
+  </data>
+  <data xml:space="preserve" name="Logout">
+    <value>Log Out</value>
+  </data>
+  <data xml:space="preserve" name="User_Login">
+    <value>Log In</value>
+  </data>
+  <data xml:space="preserve" name="Login">
+    <value>Log In</value>
+  </data>
+  <data xml:space="preserve" name="Common_Amount">
+    <value>Amount</value>
+  </data>
+  <data xml:space="preserve" name="Common_Date">
+    <value>Date</value>
+  </data>
+  <data xml:space="preserve" name="Common_Status">
+    <value>Status</value>
+  </data>
+  <data xml:space="preserve" name="Common_Actions">
+    <value>Actions</value>
+  </data>
+  <data xml:space="preserve" name="Common_Search">
+    <value>Search</value>
+  </data>
+  <data xml:space="preserve" name="Common_Save">
+    <value>Save</value>
+  </data>
+  <data xml:space="preserve" name="Common_Cancel">
+    <value>Cancel</value>
+  </data>
+  <data xml:space="preserve" name="Common_Delete">
+    <value>Delete</value>
+  </data>
+  <data xml:space="preserve" name="Common_Back">
+    <value>Back</value>
+  </data>
+  <data xml:space="preserve" name="Common_Details">
+    <value>Details</value>
+  </data>
+  <data xml:space="preserve" name="Common_Edit">
+    <value>Edit</value>
+  </data>
+  <data xml:space="preserve" name="Common_Create">
+    <value>Create</value>
+  </data>
+  <data xml:space="preserve" name="Common_Validate">
+    <value>Approve</value>
+  </data>
+  <data xml:space="preserve" name="Common_Reject">
+    <value>Reject</value>
+  </data>
+  <data xml:space="preserve" name="Common_Success">
+    <value>Operation completed successfully.</value>
+  </data>
+  <data xml:space="preserve" name="Common_Error">
+    <value>An error occurred.</value>
+  </data>
+  <data xml:space="preserve" name="Common_Print">
+    <value>Print</value>
+  </data>
+  <data xml:space="preserve" name="Common_Close">
+    <value>Close</value>
+  </data>
+  <data xml:space="preserve" name="Common_Filter">
+    <value>Filter</value>
+  </data>
+  <data xml:space="preserve" name="Common_All">
+    <value>All</value>
+  </data>
+  <data xml:space="preserve" name="Common_Yes">
+    <value>Yes</value>
+  </data>
+  <data xml:space="preserve" name="Common_No">
+    <value>No</value>
+  </data>
+  <data xml:space="preserve" name="Common_Code">
+    <value>Code</value>
+  </data>
+  <data xml:space="preserve" name="Common_Name">
+    <value>Name</value>
+  </data>
+  <data xml:space="preserve" name="Common_City">
+    <value>City</value>
+  </data>
+  <data xml:space="preserve" name="Common_Total">
+    <value>Total</value>
+  </data>
+  <data xml:space="preserve" name="Common_Language">
+    <value>Language</value>
+  </data>
+  <data xml:space="preserve" name="Common_Theme">
+    <value>Theme</value>
+  </data>
+  <data xml:space="preserve" name="A11y_SkipToContent">
+    <value>Skip to main content</value>
+  </data>
+  <data xml:space="preserve" name="A11y_ToggleMenu">
+    <value>Toggle menu</value>
+  </data>
+  <data xml:space="preserve" name="A11y_ToggleTheme">
+    <value>Toggle theme</value>
+  </data>
+  <data xml:space="preserve" name="A11y_LanguageSelector">
+    <value>Select language</value>
+  </data>
+  <data xml:space="preserve" name="Auth_LoginSpace">
+    <value>LOGIN AREA</value>
+  </data>
+  <data xml:space="preserve" name="Auth_SecureSpace">
+    <value>SECURE PORTAL</value>
+  </data>
+  <data xml:space="preserve" name="Auth_Welcome">
+    <value>Welcome</value>
+  </data>
+  <data xml:space="preserve" name="Auth_LoginSubtitle">
+    <value>Enter your credentials to access your workspace.</value>
+  </data>
+  <data xml:space="preserve" name="Auth_Email">
+    <value>Email address</value>
+  </data>
+  <data xml:space="preserve" name="Auth_Password">
+    <value>Password</value>
+  </data>
+  <data xml:space="preserve" name="Auth_RememberMe">
+    <value>Remember me on this device</value>
+  </data>
+  <data xml:space="preserve" name="Auth_SignIn">
+    <value>Sign In</value>
+  </data>
+  <data xml:space="preserve" name="Auth_ForgotPassword">
+    <value>Forgot password?</value>
+  </data>
+  <data xml:space="preserve" name="Auth_ContactAdmin">
+    <value>Having trouble? Contact your administrator.</value>
+  </data>
+  <data xml:space="preserve" name="Auth_NeverSharePassword">
+    <value>Never share your password with anyone.</value>
+  </data>
+  <data xml:space="preserve" name="Auth_NeverShareCode">
+    <value>Never share your verification codes.</value>
+  </data>
+  <data xml:space="preserve" name="Auth_Show">
+    <value>Show</value>
+  </data>
+  <data xml:space="preserve" name="Auth_Hide">
+    <value>Hide</value>
+  </data>
+  <data xml:space="preserve" name="Auth_ReservedSpace">
+    <value>Restricted Area</value>
+  </data>
+  <data xml:space="preserve" name="Auth_PortalCaption">
+    <value>Banking Management Portal</value>
+  </data>
+  <data xml:space="preserve" name="Home_WelcomeTitle">
+    <value>Welcome to Akaranga Bank Portal</value>
+  </data>
+  <data xml:space="preserve" name="Home_WelcomeSubtitle">
+    <value>Core banking management, branches, and compliance system.</value>
+  </data>
+  <data xml:space="preserve" name="Home_QuickAccess">
+    <value>Quick Access to Modules</value>
+  </data>
+  <data xml:space="preserve" name="Home_OperationsDesc">
+    <value>Manage accounts, deposits, withdrawals, transfers, and clearing.</value>
+  </data>
+  <data xml:space="preserve" name="Home_AgencesDesc">
+    <value>Bank branch network across Burundi.</value>
+  </data>
+  <data xml:space="preserve" name="Home_ConformiteDesc">
+    <value>AML surveillance, STR/CNRF filings, and regulatory compliance.</value>
+  </data>
+  <data xml:space="preserve" name="Home_AdminDesc">
+    <value>Manage system users, audit logs, documents, and notifications.</value>
+  </data>
+</root>

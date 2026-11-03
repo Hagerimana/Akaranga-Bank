@@ -1,0 +1,50 @@
+@* Chap 6 *@
+@model AkarangaBankMvc.Web.ViewModels.CompteCreateViewModel
+@{
+    ViewData["Title"] = "Ouvrir un compte";
+}
+
+<h1>Ouvrir un compte</h1>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="NumeroCompte" class="form-label"></label>
+        <input asp-for="NumeroCompte" class="form-control" placeholder="BJM-0006-0001" />
+        <span asp-validation-for="NumeroCompte" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="ClientId" class="form-label"></label>
+        <select asp-for="ClientId" asp-items="ViewBag.Clients" class="form-select">
+            <option value="">-- Sélectionner un client --</option>
+        </select>
+        <span asp-validation-for="ClientId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="TypeCompteId" class="form-label"></label>
+        <select asp-for="TypeCompteId" asp-items="ViewBag.TypesCompte" class="form-select">
+            <option value="">-- Sélectionner un type --</option>
+        </select>
+        <span asp-validation-for="TypeCompteId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="AgenceId" class="form-label"></label>
+        <select asp-for="AgenceId" asp-items="ViewBag.Agences" class="form-select">
+            <option value="">-- Sélectionner une agence --</option>
+        </select>
+        <span asp-validation-for="AgenceId" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="SoldeInitial" class="form-label"></label>
+        <input asp-for="SoldeInitial" class="form-control" value="0" />
+        <span asp-validation-for="SoldeInitial" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ouvrir le compte</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

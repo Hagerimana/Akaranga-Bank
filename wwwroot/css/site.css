@@ -1,0 +1,98 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+/* ==========================================================================
+   Accessibilité (WCAG 2.1 AA) - Chapitre 13
+   ========================================================================== */
+
+/* Skip Link : masqué hors écran par défaut, visible au focus clavier */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  background: #1F3864;
+  color: #ffffff;
+  padding: 0.75rem 1.25rem;
+  border: 2px solid #ffbf47;
+  border-radius: 4px;
+  font-weight: 700;
+  z-index: 100000;
+  text-decoration: none;
+  transition: top 0.2s ease-in-out;
+}
+
+.skip-link:focus {
+  top: 1rem;
+  outline: 3px solid #ffbf47;
+  outline-offset: 3px;
+  color: #ffffff;
+}
+
+/* Indicateur de focus clavier visible (contour or / jaune haute visibilité) */
+:focus-visible {
+  outline: 3px solid #ffbf47 !important;
+  outline-offset: 2px !important;
+}
+
+/* Boutons et contrôles */
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible,
+.form-check-input:focus-visible {
+  outline: 3px solid #ffbf47 !important;
+  outline-offset: 2px !important;
+  box-shadow: none !important;
+}
+
+/* Sélecteur de langue accessible */
+.ak-lang-dropdown .dropdown-item:focus,
+.ak-lang-dropdown .dropdown-item:hover {
+  background-color: rgba(31, 56, 100, 0.1);
+}
+
+.ak-lang-dropdown .dropdown-item.active {
+  background-color: #1F3864;
+  color: #ffffff;
+}
+
+/* Alerts avec role="alert" accessibles */
+[role="alert"] {
+  border-left: 4px solid currentColor;
+}
+
+/* Support du zoom à 200% */
+@media screen and (min-resolution: 2dppx), screen and (max-width: 480px) {
+  body {
+    word-break: break-word;
+    overflow-x: hidden;
+  }
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}

@@ -1,0 +1,21 @@
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row g-4">
+    <div class="col-lg-3">
+        <div class="ak-card p-3">
+            <partial name="_ManageNav" />
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <div class="ak-card p-4">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await RenderSectionAsync("Scripts", required: false)
+}

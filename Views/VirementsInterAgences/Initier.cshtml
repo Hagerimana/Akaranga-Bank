@@ -1,0 +1,86 @@
+@model AkarangaBankMvc.Web.ViewModels.VirementInterAgenceViewModel
+
+@{
+    ViewData["Title"] = "Initier un virement inter-agences";
+}
+
+<h1>Initier un virement inter-agences</h1>
+
+<div class="alert alert-info">
+    L'initiation crée une demande en attente.
+    Les soldes ne seront modifiés qu'après validation.
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Initier" method="post">
+            <div asp-validation-summary="All"
+                 class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="CompteSourceId"
+                       class="form-label"></label>
+
+                <select asp-for="CompteSourceId"
+                        asp-items="ViewBag.ComptesSource"
+                        class="form-select">
+                    <option value="">Sélectionner le compte source</option>
+                </select>
+
+                <span asp-validation-for="CompteSourceId"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CompteDestinationId"
+                       class="form-label"></label>
+
+                <select asp-for="CompteDestinationId"
+                        asp-items="ViewBag.ComptesDestination"
+                        class="form-select">
+                    <option value="">Sélectionner le compte destination</option>
+                </select>
+
+                <span asp-validation-for="CompteDestinationId"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Montant" class="form-label"></label>
+
+                <input asp-for="Montant"
+                       type="number"
+                       min="0.01"
+                       step="0.01"
+                       class="form-control" />
+
+                <span asp-validation-for="Montant"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Motif" class="form-label"></label>
+
+                <textarea asp-for="Motif"
+                          maxlength="255"
+                          rows="3"
+                          class="form-control"></textarea>
+
+                <span asp-validation-for="Motif"
+                      class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Initier le virement
+            </button>
+
+            <a asp-action="Index" class="btn btn-secondary">
+                Annuler
+            </a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

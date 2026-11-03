@@ -1,0 +1,41 @@
+@* Chap 5 *@
+@model AkarangaBankMvc.Web.ViewModels.AgenceCreateViewModel
+@{
+    ViewData["Title"] = "Nouvelle agence";
+}
+
+<h1>Nouvelle agence</h1>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="Code" class="form-label"></label>
+        <input asp-for="Code" class="form-control" placeholder="AKR-BJM" />
+        <span asp-validation-for="Code" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Nom" class="form-label"></label>
+        <input asp-for="Nom" class="form-control" />
+        <span asp-validation-for="Nom" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Ville" class="form-label"></label>
+        <input asp-for="Ville" class="form-control" />
+        <span asp-validation-for="Ville" class="text-danger"></span>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="EstSiege" class="form-check-input" />
+        <label asp-for="EstSiege" class="form-check-label"></label>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

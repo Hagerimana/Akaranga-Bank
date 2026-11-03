@@ -1,0 +1,137 @@
+@* Chap 5 *@
+@model AkarangaBank.Web.ViewModels.ClientDetailsViewModel
+@{
+    ViewData["Title"] = "Détails du client";
+}
+
+<h1>@Model.Client.Nom @Model.Client.Prenom</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Numéro client</dt>
+    <dd class="col-sm-9">@Model.Client.NumeroClient</dd>
+
+    <dt class="col-sm-3">Date de naissance</dt>
+    <dd class="col-sm-9">
+        @Model.Client.DateNaissance.ToString("dd/MM/yyyy")
+    </dd>
+
+    <dt class="col-sm-3">CNI</dt>
+    <dd class="col-sm-9">@Model.Client.NumeroCNI</dd>
+
+    <dt class="col-sm-3">Téléphone</dt>
+    <dd class="col-sm-9">@Model.Client.Telephone</dd>
+
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@Model.Client.Email</dd>
+
+    <dt class="col-sm-3">Adresse</dt>
+    <dd class="col-sm-9">@Model.Client.Adresse</dd>
+
+    <dt class="col-sm-3">Agence</dt>
+    <dd class="col-sm-9">
+        <a asp-controller="Agences" asp-action="Details" asp-route-id="@Model.Client.AgenceId">
+            @Model.Client.Agence.Code - @Model.Client.Agence.Nom
+        </a>
+    </dd>
+
+    <dt class="col-sm-3">Statut</dt>
+    <dd class="col-sm-9">
+        <span class="badge @(Model.Client.Statut == "Actif" ? "bg-success" : "bg-warning")">
+            @Model.Client.Statut
+        </span>
+    </dd>
+</dl>
+
+<h2>Comptes bancaires</h2>
+
+@if (!Model.Comptes.Any())
+{
+    <p class="text-muted">Ce client ne possède aucun compte.</p>
+}
+else
+{
+    <table class="table table-sm">
+        <thead>
+            <tr>
+                <th>Numéro</th>
+                <th>Type</th>
+                <th>Solde</th>
+                <th>Devise</th>
+                <th>Statut</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var compte in Model.Comptes)
+            {
+                <tr>
+                    <td>@compte.NumeroCompte</td>
+                    <td>@compte.TypeCompte.Libelle</td>
+                    <td>@compte.Solde.ToString("N2")</td>
+                    <td>@compte.Devise</td>
+                    <td>@compte.Statut</td>
+                    <td>
+                        <a asp-controller="Comptes" asp-action="Details" asp-route-id="@compte.Id"
+                           class="btn btn-sm btn-primary">Détails</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <p><strong>Solde total :</strong>
+        @Model.SoldeTotal.ToString("N2") EUR</p>
+    }
+
+    <h2>Vérifications KYC</h2>
+
+    @if (!Model.VerificationsKYC.Any())
+    {
+        <p class="text-muted">Aucune vérification KYC enregistrée.</p>
+    }
+    else
+    {
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Numéro</th>
+                    <th>Statut</th>
+                    <th>Vérifié par</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var kyc in Model.VerificationsKYC)
+                {
+                    <tr>
+                        <td>@kyc.TypeDocument</td>
+                        <td>@kyc.NumeroDocument</td>
+                        <td>
+                            <span
+                                class="badge @(kyc.Statut == "Valide" ? "bg-success" : kyc.Statut == "Rejete" ? "bg-danger" : kyc.Statut == "Expire" ? "bg-secondary" : "bg-warning")">
+                                @kyc.Statut
+                            </span>
+                        </td>
+                        <td>@(kyc.VerifiePar?.NomComplet ?? "-")</td>
+                        <td>@(kyc.DateVerification?.ToString("dd/MM/yyyy") ?? "-")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <div class="mt-3">
+        <a asp-controller="VerificationsKYC" asp-action="Create"                asp-route-clientId="@Model.Client.Id"
+           class="btn btn-info">+
+            Nouvelle vérification KY
+        </a>
+
+        <a asp-controller="Comptes" asp-action="Create" asp-route-clientId="@Model.Client.Id" class="btn btn-success">+ Ouvrir un compte
+        </a>
+
+        <a asp-action="Edit" asp-route-id="@Model.Client.Id" class="bt btn-warning">Modifier
+        </a>
+        
+        <a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>
+    </div>

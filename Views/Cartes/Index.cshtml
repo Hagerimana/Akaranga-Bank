@@ -1,0 +1,152 @@
+@model AkarangaBankMvc.Web.ViewModels.CarteListViewModel
+
+@{
+    ViewData["Title"] = "Cartes bancaires";
+}
+
+<h1>Cartes bancaires</h1>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success" role="alert">@msg</div>
+}
+
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger" role="alert">@err</div>
+}
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-5">
+        <input type="text" name="recherche" value="@Model.Recherche"
+               class="form-control"
+               placeholder="Numéro de carte, client ou compte..." />
+    </div>
+
+    <div class="col-md-3">
+        <select name="statut" class="form-select">
+            <option value="">-- Statut --</option>
+
+            @foreach (var statut in new[]
+            {
+                "Active", "Bloquee", "Expiree", "Perdue",
+                "Volee", "Opposition"
+            })
+            {
+                <option value="@statut"
+                        selected="@(Model.Statut == statut ? "selected" : null)">
+                    @statut
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-4 d-flex gap-1">
+        <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            Réinitialiser
+        </a>
+    </div>
+</form>
+
+<div class="mb-3 d-flex justify-content-between align-items-center">
+    <span class="text-muted">@Model.Total carte(s) trouvée(s).</span>
+
+    @if (User.IsInRole("admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary">
+            + Émettre une carte
+        </a>
+    }
+</div>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th scope="col">Numéro</th>
+            <th scope="col">Client</th>
+            <th scope="col">Compte</th>
+            <th scope="col">Type</th>
+            <th scope="col">Expiration</th>
+            <th scope="col" class="text-end">Plafond retrait</th>
+            <th scope="col" class="text-end">Plafond paiement</th>
+            <th scope="col">Statut</th>
+            <th scope="col">Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @if (!Model.Cartes.Any())
+        {
+            <tr>
+                <td colspan="9" class="text-center text-muted">
+                    Aucune carte ne correspond aux critères.
+                </td>
+            </tr>
+        }
+
+        @foreach (var carte in Model.Cartes)
+        {
+            <tr>
+                <td><code>@carte.NumeroMasque</code></td>
+                <td>
+                    @carte.Client.Nom @carte.Client.Prenom
+                    <br />
+                    <small class="text-muted">
+                        @carte.Client.NumeroClient
+                    </small>
+                </td>
+                <td>@carte.Compte.NumeroCompte</td>
+                <td>@carte.TypeCarte</td>
+                <td>@carte.DateExpiration.ToString("dd/MM/yyyy")</td>
+                <td class="text-end">
+                    @carte.PlafondRetrait.ToString("N2") BIF
+                </td>
+                <td class="text-end">
+                    @carte.PlafondPaiement.ToString("N2") BIF
+                </td>
+                <td>
+                    @{
+                        var couleur = carte.Statut switch
+                        {
+                            "Active" => "bg-success",
+                            "Bloquee" => "bg-warning text-dark",
+                            "Expiree" => "bg-secondary",
+                            "Perdue" => "bg-danger",
+                            "Volee" => "bg-danger",
+                            "Opposition" => "bg-dark",
+                            _ => "bg-secondary"
+                        };
+                    }
+
+                    <span class="badge @couleur">@carte.Statut</span>
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@carte.Id"
+                       class="btn btn-sm btn-primary">
+                        Détails
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (Model.TotalPages > 1)
+{
+    <nav aria-label="Pagination des cartes">
+        <ul class="pagination">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@i"
+                       asp-route-recherche="@Model.Recherche"
+                       asp-route-statut="@Model.Statut">
+                        @i
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

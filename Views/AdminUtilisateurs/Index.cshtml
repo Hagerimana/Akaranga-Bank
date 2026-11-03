@@ -1,0 +1,77 @@
+@model IEnumerable<AkarangaBankMvc.Web.Models.ApplicationUser>
+@{
+    ViewData["Title"] = "Administration des utilisateurs";
+}
+<h1>Utilisateurs</h1>
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success">@msg</div>
+}
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger">@err</div>
+}
+<div class="mb-3 text-end">
+    <a asp-action="Create" class="btn btn-success">+ Nouvel utilisateur</a>
+</div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Rôle</th>
+            <th>Agence</th>
+            <th>2FA</th>
+            <th>Actif</th>
+            <th>Verrouillé</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            var estVerrouille = u.LockoutEnd.HasValue && u.LockoutEnd > DateTimeOffset.UtcNow;
+            <tr>
+                <td>@u.NomComplet</td>
+                <td>@u.Email</td>
+                <td>@u.Role</td>
+                <td>@u.Agence.Code</td>
+                <td>
+                    @if (u.TwoFactorEnabled)
+                    {
+                        <span class="badge bg-success">Activée</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark">Inactive</span>
+                    }
+                </td>
+                <td>
+                    <span class="badge @(u.EstActif ? "bg-success" : "bg-secondary")">
+                        @(u.EstActif ? "Oui" : "Non")
+                    </span>
+                </td>
+                <td>
+                    <span class="badge @(estVerrouille ? "bg-danger" : "bg-success")">
+                        @(estVerrouille ? "Oui" : "Non")
+                    </span>
+                </td>
+                <td>
+                    <form asp-action="ToggleActif" asp-route-id="@u.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-warning">
+                            @(u.EstActif ? "Désactiver" : "Activer")
+                        </button>
+                    </form>
+                    @if (estVerrouille)
+                    {
+                        <form asp-action="Deverrouiller" asp-route-id="@u.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-danger">
+                                Déverrouiller
+                            </button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,165 @@
+@model AkarangaBankMvc.Web.Models.AlerteAML
+
+@{
+    ViewData["Title"] = $"Alerte AML n° {Model.Id}";
+}
+
+<h1>Alerte AML n° @Model.Id</h1>
+
+@if (TempData["Success"] is string succes)
+{
+    <div class="alert alert-success" role="alert">
+        @succes
+    </div>
+}
+
+@if (TempData["Error"] is string erreur)
+{
+    <div class="alert alert-danger" role="alert">
+        @erreur
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-3">Client</dt>
+            <dd class="col-sm-9">
+                @Model.Client.Nom @Model.Client.Prenom
+            </dd>
+
+            <dt class="col-sm-3">Numéro client</dt>
+            <dd class="col-sm-9">@Model.Client.NumeroClient</dd>
+
+            <dt class="col-sm-3">Type d'alerte</dt>
+            <dd class="col-sm-9">@Model.TypeAlerte</dd>
+
+            <dt class="col-sm-3">Niveau</dt>
+            <dd class="col-sm-9">
+                <span class="badge @(Model.Niveau switch
+                {
+                    "Critique" => "bg-danger",
+                    "Eleve" => "bg-warning text-dark",
+                    "Moyen" => "bg-info text-dark",
+                    _ => "bg-secondary"
+                })">
+                    @Model.Niveau
+                </span>
+            </dd>
+
+            <dt class="col-sm-3">Statut</dt>
+            <dd class="col-sm-9">@Model.Statut</dd>
+
+            <dt class="col-sm-3">Date de l'alerte (UTC)</dt>
+            <dd class="col-sm-9">
+                @Model.DateAlerte.ToString("dd/MM/yyyy HH:mm:ss")
+            </dd>
+
+            <dt class="col-sm-3">Opération associée</dt>
+            <dd class="col-sm-9">
+                @if (Model.Operation is not null)
+                {
+                    @Model.Operation.Reference
+                    <text> — </text>
+                    @Model.Operation.Montant.ToString("N2")
+                    <text> </text>
+                    @Model.Operation.Devise
+                }
+                else
+                {
+                    <span class="text-muted">Aucune</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
+
+            <dt class="col-sm-3">Traité par</dt>
+            <dd class="col-sm-9">
+                @(Model.TraitePar?.NomComplet ?? "Non renseigné")
+            </dd>
+
+            <dt class="col-sm-3">Date de traitement (UTC)</dt>
+            <dd class="col-sm-9">
+                @(Model.DateTraitement?.ToString("dd/MM/yyyy HH:mm:ss")
+                    ?? "Non renseignée")
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h2 class="h5 mb-0">Traitement conformité</h2>
+    </div>
+
+    <div class="card-body">
+        @if (Model.Statut == "Traitee" || Model.Statut == "Classee")
+        {
+            <div class="alert alert-info mb-0">
+                Cette alerte est déjà clôturée.
+                Elle ne peut plus être modifiée depuis cette page.
+            </div>
+        }
+        else
+        {
+            <form asp-action="Traiter"
+                  asp-route-id="@Model.Id"
+                  method="post">
+
+                <div class="mb-3">
+                    <label for="statut" class="form-label">
+                        Nouveau statut
+                    </label>
+
+                    <select id="statut"
+                            name="statut"
+                            class="form-select"
+                            required>
+                        <option value="EnCours"
+                                selected="@(Model.Statut == "EnCours")">
+                            En cours
+                        </option>
+
+                        <option value="Traitee"
+                                selected="@(Model.Statut == "Traitee")">
+                            Traitée
+                        </option>
+
+                        <option value="Classee"
+                                selected="@(Model.Statut == "Classee")">
+                            Classée sans suite
+                        </option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="commentaire" class="form-label">
+                        Commentaire
+                    </label>
+
+                    <textarea id="commentaire"
+                              name="commentaire"
+                              rows="4"
+                              maxlength="500"
+                              class="form-control"
+                              placeholder="Analyse, décision, justification...">
+                    </textarea>
+
+                    <div class="form-text">
+                        500 caractères maximum.
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Enregistrer le traitement
+                </button>
+
+                <a asp-action="Alertes"
+                   class="btn btn-secondary">
+                    Retour aux alertes
+                </a>
+            </form>
+        }
+    </div>
+</div>

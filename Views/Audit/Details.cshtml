@@ -1,0 +1,103 @@
+@model AkarangaBankMvc.Web.Models.AuditLog
+@{
+    ViewData["Title"] = "Détail de la trace d'audit";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">Trace d'audit #@Model.Id</h1>
+    <a asp-action="Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Retour au journal
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-body-tertiary">
+                <h5 class="card-title mb-0">Informations générales</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Date (UTC)</dt>
+                    <dd class="col-sm-8">@Model.DateEvenement.ToString("dd/MM/yyyy HH:mm:ss")</dd>
+
+                    <dt class="col-sm-4">Action</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-primary">@Model.Action</span>
+                    </dd>
+
+                    <dt class="col-sm-4">Table</dt>
+                    <dd class="col-sm-8"><code>@Model.TableConcernee</code></dd>
+
+                    <dt class="col-sm-4">ID Enregistrement</dt>
+                    <dd class="col-sm-8">@(Model.EnregistrementId?.ToString() ?? "N/A")</dd>
+
+                    <dt class="col-sm-4">Détails</dt>
+                    <dd class="col-sm-8">@Model.Details</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-body-tertiary">
+                <h5 class="card-title mb-0">Contexte utilisateur & réseau</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Utilisateur</dt>
+                    <dd class="col-sm-8">
+                        @(Model.Utilisateur?.Email ?? Model.Utilisateur?.NomComplet ?? "Système (Automatique)")
+                    </dd>
+
+                    <dt class="col-sm-4">Agence</dt>
+                    <dd class="col-sm-8">
+                        @(Model.Agence != null ? $"{Model.Agence.Code} — {Model.Agence.Nom}" : "—")
+                    </dd>
+
+                    <dt class="col-sm-4">Adresse IP</dt>
+                    <dd class="col-sm-8"><code>@(Model.AdresseIP ?? "Non capturée")</code></dd>
+
+                    <dt class="col-sm-4">User-Agent</dt>
+                    <dd class="col-sm-8"><small class="text-break">@(Model.UserAgent ?? "—")</small></dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-body-tertiary">
+                <h5 class="card-title mb-0">Données avant / après</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <h6>Valeur Avant (JSON)</h6>
+                        @if (!string.IsNullOrEmpty(Model.ValeurAvant))
+                        {
+                            <pre class="bg-body-tertiary p-3 rounded border" style="max-height: 300px; overflow: auto;"><code>@Model.ValeurAvant</code></pre>
+                        }
+                        else
+                        {
+                            <p class="text-muted fst-italic">Aucune donnée antérieure (Création)</p>
+                        }
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Valeur Après (JSON)</h6>
+                        @if (!string.IsNullOrEmpty(Model.ValeurApres))
+                        {
+                            <pre class="bg-body-tertiary p-3 rounded border" style="max-height: 300px; overflow: auto;"><code>@Model.ValeurApres</code></pre>
+                        }
+                        else
+                        {
+                            <p class="text-muted fst-italic">Aucune donnée postérieure (Suppression)</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

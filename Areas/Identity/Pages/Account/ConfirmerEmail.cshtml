@@ -1,0 +1,30 @@
+@page
+@model ConfirmerEmailModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Confirmation de l'email";
+    ViewData["Subtitle"] = Model.Message;
+}
+
+@if (Model.Succes)
+{
+    <div class="alert alert-success" role="status">
+        Votre adresse email <strong>@Model.Email</strong> est maintenant confirmée.
+    </div>
+
+    <a asp-page="./Login" class="login-submit text-decoration-none">
+        Se connecter
+        <span aria-hidden="true">→</span>
+    </a>
+}
+else
+{
+    <div class="alert alert-danger" role="alert">
+        @Model.Message
+    </div>
+
+    <a asp-page="./Login" class="login-submit text-decoration-none">
+        Revenir à la connexion
+        <span aria-hidden="true">→</span>
+    </a>
+}

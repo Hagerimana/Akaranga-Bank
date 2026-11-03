@@ -1,0 +1,16 @@
+@model string
+
+@if (!string.IsNullOrWhiteSpace(Model))
+{
+    var estErreur = Model.StartsWith(
+        "Error",
+        System.StringComparison.OrdinalIgnoreCase);
+
+    var classeAlerte = estErreur
+        ? "alert-danger"
+        : "alert-success";
+
+    <div class="alert @classeAlerte" role="alert">
+        @Model
+    </div>
+}

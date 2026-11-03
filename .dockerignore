@@ -1,0 +1,38 @@
+# Résultats de compilation
+**/bin/
+**/obj/
+
+# Gestion de versions
+.git/
+.gitignore
+
+# Environnements de développement
+.vs/
+.vscode/
+.idea/
+**/*.user
+**/*.suo
+
+# Journaux
+**/*.log
+
+# Secrets et configurations locales
+.env
+.env.*
+**/secrets.json
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+# Certificats privés
+**/*.pfx
+**/*.p12
+**/*.key
+
+# Fichiers de déploiement local
+compose.yaml
+compose.yml
+docker-compose*.yml
+docker-compose*.yaml
+
+# Documentation
+README.md

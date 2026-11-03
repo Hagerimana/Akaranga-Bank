@@ -1,0 +1,122 @@
+@model IEnumerable<AkarangaBankMvc.Web.Models.DeclarationSoupcon>
+
+@{
+    ViewData["Title"] = "Déclarations DOS — simulation";
+
+    string? filtre = ViewBag.Statut;
+    var lignes = Model.ToList();
+
+    var statuts = new[]
+    {
+        "Brouillon", "Validee", "Transmise", "Accusee", "Rejetee"
+    };
+}
+
+<h1>Déclarations d'opérations suspectes</h1>
+
+<div class="alert alert-warning">
+    Module pédagogique : aucun envoi réel à la CNRF.
+    Les transmissions et accusés sont simulés.
+</div>
+
+@if (TempData["Success"] is string message)
+{
+    <div class="alert alert-success" role="alert">@message</div>
+}
+
+@if (TempData["Error"] is string erreur)
+{
+    <div class="alert alert-danger" role="alert">@erreur</div>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <h2 class="h5">Générer une DOS depuis une alerte</h2>
+
+        <form asp-action="Generer" method="post" class="row g-3">
+            <div class="col-md-4">
+                <label for="alerteId" class="form-label">
+                    Identifiant de l'alerte
+                </label>
+
+                <input id="alerteId" name="alerteId" type="number" min="1" required class="form-control" />
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">
+                    Générer / Ouvrir la DOS
+                </button>
+            </div>
+        </form>
+
+        <a asp-controller="Conformite" asp-action="Alertes" class="btn btn-link mt-2">
+            Consulter les alertes existantes
+        </a>
+    </div>
+</div>
+
+<form asp-action="Index" method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <label for="statut" class="form-label">Statut</label>
+
+        <select id="statut" name="statut" class="form-select">
+            <option value="">Tous les statuts</option>
+
+            @foreach (var statut in statuts)
+            {
+                <option value="@statut" selected="@(filtre == statut)">
+                    @statut
+                </option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-2 d-flex align-items-end">
+        <button type="submit" class="btn btn-outline-primary">
+            Filtrer
+        </button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th scope="col">Date UTC</th>
+                <th scope="col">Référence</th>
+                <th scope="col">Client</th>
+                <th scope="col">Type</th>
+                <th scope="col">Statut</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (!lignes.Any())
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        Aucune déclaration pour ces critères.
+                    </td>
+                </tr>
+            }
+
+            @foreach (var d in lignes)
+            {
+                <tr>
+                    <td>@d.DateCreation.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@d.Reference</td>
+                    <td>@d.Client.Nom @d.Client.Prenom</td>
+                    <td>@d.TypeDeclaration</td>
+                    <td>@d.Statut</td>
+
+                    <td>
+                        <a asp-action="Details" asp-route-id="@d.Id" class="btn btn-outline-primary btn-sm">
+                            Détails
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

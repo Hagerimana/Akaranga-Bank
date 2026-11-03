@@ -1,0 +1,8 @@
+@inject AkarangaBankMvc.Web.Services.IQrCodeService QrCodeService
+@{
+    var qrBase64 =
+   QrCodeService.GenerateQrCodeBase64(Model.AuthenticatorUri);
+}
+<div>
+    <img src="data:image/png;base64,@qrBase64" alt="QR code 2FA" />
+</div>

@@ -1,0 +1,135 @@
+@model AkarangaBankMvc.Web.ViewModels.JournalComptableViewModel
+@{
+    ViewData["Title"] = "Journal Général Comptable";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0">Journal Général Comptable</h1>
+        <p class="text-muted mb-0">Enregistrement chronologique de toutes les écritures en partie double</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="ExportJournal"
+           asp-route-debut="@Model.DateDebut?.ToString("yyyy-MM-dd")"
+           asp-route-fin="@Model.DateFin?.ToString("yyyy-MM-dd")"
+           asp-route-typeOp="@Model.TypeOperation"
+           class="btn btn-outline-success">
+            <i class="bi bi-file-earmark-excel me-1"></i> Export Excel / CSV
+        </a>
+        <button onclick="window.print()" class="btn btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i> Imprimer
+        </button>
+    </div>
+</div>
+
+<div class="card mb-4 no-print">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-3">
+                <label for="debut" class="form-label">Date début</label>
+                <input type="date" id="debut" name="debut" value="@Model.DateDebut?.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label for="fin" class="form-label">Date fin</label>
+                <input type="date" id="fin" name="fin" value="@Model.DateFin?.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <label for="typeOp" class="form-label">Type d'opération</label>
+                <select id="typeOp" name="typeOp" class="form-select">
+                    <option value="">Toutes les opérations</option>
+                    <option value="Depot" selected="@(Model.TypeOperation == "Depot")">Dépôt</option>
+                    <option value="Retrait" selected="@(Model.TypeOperation == "Retrait")">Retrait</option>
+                    <option value="Virement" selected="@(Model.TypeOperation == "Virement")">Virement interne</option>
+                    <option value="VirementInterAgence" selected="@(Model.TypeOperation == "VirementInterAgence")">Virement inter-agences</option>
+                    <option value="DeblocagePret" selected="@(Model.TypeOperation == "DeblocagePret")">Déblocage de prêt</option>
+                    <option value="RemboursementPret" selected="@(Model.TypeOperation == "RemboursementPret")">Remboursement de prêt</option>
+                    <option value="TransactionCarte" selected="@(Model.TypeOperation == "TransactionCarte")">Transaction Carte</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-secondary w-100">Filtrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle mb-0" role="table" aria-label="Journal comptable">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Réf. Opération</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Compte</th>
+                    <th scope="col">Libellé</th>
+                    <th scope="col" class="text-end">Débit (BIF)</th>
+                    <th scope="col" class="text-end">Crédit (BIF)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Lignes.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">Aucune écriture trouvée pour cette période.</td>
+                    </tr>
+                }
+                @foreach (var l in Model.Lignes)
+                {
+                    <tr>
+                        <td class="small">@l.DateEcriture.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td><code>@l.ReferenceOperation</code></td>
+                        <td><span class="badge bg-light text-dark border">@l.TypeOperation</span></td>
+                        <td>
+                            <strong>@l.NumeroCompte</strong>
+                            <div class="small text-muted">@l.IntituleCompte</div>
+                        </td>
+                        <td>@l.Libelle</td>
+                        <td class="text-end fw-semibold">@(l.Debit > 0 ? l.Debit.ToString("N2") : "—")</td>
+                        <td class="text-end fw-semibold">@(l.Credit > 0 ? l.Credit.ToString("N2") : "—")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="table-light border-top border-2 border-dark">
+                <tr>
+                    <th colspan="5" class="text-end">TOTAL :</th>
+                    <th class="text-end">@Model.TotalDebits.ToString("N2")</th>
+                    <th class="text-end">@Model.TotalCredits.ToString("N2")</th>
+                </tr>
+                <tr>
+                    <th colspan="5" class="text-end">Équilibre Débit / Crédit :</th>
+                    <th colspan="2" class="text-center">
+                        @if (Model.EstEquilibre)
+                        {
+                            <span class="text-success"><i class="bi bi-check-circle-fill"></i> Équilibre Parfait (Différence = 0,00 BIF)</span>
+                        }
+                        else
+                        {
+                            <span class="text-danger"><i class="bi bi-exclamation-triangle-fill"></i> Écart : @(Math.Abs(Model.TotalDebits - Model.TotalCredits).ToString("N2")) BIF</span>
+                        }
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer d-flex justify-content-between align-items-center no-print">
+            <span class="small text-muted">Total : @Model.TotalItems écriture(s)</span>
+            <ul class="pagination pagination-sm m-0">
+                @for (int p = 1; p <= Model.TotalPages; p++)
+                {
+                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                        <a class="page-link" asp-action="Journal"
+                           asp-route-page="@p"
+                           asp-route-debut="@Model.DateDebut?.ToString("yyyy-MM-dd")"
+                           asp-route-fin="@Model.DateFin?.ToString("yyyy-MM-dd")"
+                           asp-route-typeOp="@Model.TypeOperation">@p</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+

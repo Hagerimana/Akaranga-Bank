@@ -1,0 +1,63 @@
+@model AkarangaBankMvc.Web.ViewModels.DocumentUploadViewModel
+@{
+    ViewData["Title"] = "Téléverser un document";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h5 mb-0">Téléverser une pièce justificative ou un document</h1>
+            </div>
+            <div class="card-body">
+                <form asp-action="Upload" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Titre" class="form-label">Titre du document *</label>
+                        <input asp-for="Titre" class="form-control" placeholder="ex : CNI Recto-Verso - Pierre Nkurunziza" />
+                        <span asp-validation-for="Titre" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Categorie" class="form-label">Catégorie *</label>
+                            <select asp-for="Categorie" class="form-select">
+                                <option value="KYC">KYC (Pièce d'identité, justificatif)</option>
+                                <option value="Contrat">Contrat (Ouverture compte, prêt)</option>
+                                <option value="Comptable">Comptable (Reçu, état financier)</option>
+                                <option value="AML">AML / Conformité (Déclaration, enquête)</option>
+                                <option value="RH">Ressources Humaines</option>
+                                <option value="Audit">Audit interne</option>
+                            </select>
+                            <span asp-validation-for="Categorie" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ClientId" class="form-label">Identifiant client (optionnel)</label>
+                            <input asp-for="ClientId" type="number" class="form-control" placeholder="ex : 12" />
+                            <span asp-validation-for="ClientId" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="Fichier" class="form-label">Fichier * (PDF, JPG, PNG, DOCX, XLSX - Max 10 Mo)</label>
+                        <input asp-for="Fichier" type="file" class="form-control" />
+                        <span asp-validation-for="Fichier" class="text-danger small"></span>
+                        <div class="form-text text-muted">
+                            Le fichier sera stocké de manière sécurisée hors du répertoire web et tracé par son empreinte cryptographique SHA-256.
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Annuler</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-cloud-upload" aria-hidden="true"></i> Téléverser
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

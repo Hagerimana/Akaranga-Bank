@@ -1,0 +1,170 @@
+@using Microsoft.Extensions.Localization
+@using AkarangaBankMvc.Web.Resources
+@inject IStringLocalizer<SharedResource> Localizer
+
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.Name" data-theme="light" data-bs-theme="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>@ViewData["Title"] - @Localizer["AppTitle"]</title>
+
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem("ak-theme") || "light";
+
+                document.documentElement.setAttribute("data-theme", theme);
+                document.documentElement.setAttribute("data-bs-theme", theme);
+            } catch (e) {
+                // localStorage indisponible : on conserve le thème clair.
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-shell.css" asp-append-version="true" />
+</head>
+
+<body>
+    <!-- Skip link pour l'accessibilité (WCAG 2.1 AA) -->
+    <a href="#main-content" class="skip-link">@Localizer["A11y_SkipToContent"]</a>
+
+    <aside class="ak-sidebar" id="akSidebar" role="navigation" aria-label="Menu principal">
+        <a asp-controller="Home" asp-action="Index" class="ak-brand" aria-label="@Localizer["AppTitle"] - @Localizer["BrandSub"]">
+            <span class="ak-logo" aria-hidden="true">AB</span>
+
+            <span>
+                <span class="d-block ak-brand-title">@Localizer["AppTitle"]</span>
+                <span class="d-block ak-brand-sub">@Localizer["BrandSub"]</span>
+            </span>
+        </a>
+
+        <nav class="ak-nav" aria-label="Navigation principale">
+            <p class="ak-nav-title">@Localizer["Nav_Operations"]</p>
+
+            <a class="ak-nav-link" asp-controller="Home" asp-action="Index">
+                <i class="bi bi-speedometer2" aria-hidden="true"></i> @Localizer["Nav_Dashboard"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Clients" asp-action="Index">
+                <i class="bi bi-people" aria-hidden="true"></i> @Localizer["Nav_Clients"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Comptes" asp-action="Index">
+                <i class="bi bi-wallet2" aria-hidden="true"></i> @Localizer["Nav_Comptes"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Prets" asp-action="Index">
+                <i class="bi bi-cash-coin" aria-hidden="true"></i> @Localizer["Nav_Prets"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Cartes" asp-action="Index">
+                <i class="bi bi-credit-card" aria-hidden="true"></i> @Localizer["Nav_Cartes"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Operations" asp-action="Journal">
+                <i class="bi bi-journal-text" aria-hidden="true"></i> @Localizer["Nav_Journal"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="VirementsInterAgences" asp-action="Index">
+                <i class="bi bi-arrow-left-right" aria-hidden="true"></i> @Localizer["Nav_Virements"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Compensations" asp-action="Index">
+                <i class="bi bi-arrow-repeat" aria-hidden="true"></i> @Localizer["Nav_Compensations"]
+            </a>
+
+            <p class="ak-nav-title">@Localizer["Nav_Conformite"]</p>
+
+            <a class="ak-nav-link" asp-controller="TableauBordConformite" asp-action="Index">
+                <i class="bi bi-shield-check" aria-hidden="true"></i> @Localizer["Nav_Dashboard"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Conformite" asp-action="Alertes">
+                <i class="bi bi-exclamation-triangle" aria-hidden="true"></i> @Localizer["Nav_AlertesAML"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="CNRF" asp-action="Index">
+                <i class="bi bi-file-earmark-text" aria-hidden="true"></i> @Localizer["Nav_CNRF"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="SeuilsAML" asp-action="Index">
+                <i class="bi bi-sliders" aria-hidden="true"></i> @Localizer["Nav_SeuilsAML"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="VerificationsKYC" asp-action="Index">
+                <i class="bi bi-person-check" aria-hidden="true"></i> @Localizer["Nav_KYC"]
+            </a>
+
+            <p class="ak-nav-title">@Localizer["Nav_Administration"]</p>
+
+            <a class="ak-nav-link" asp-controller="AdminUtilisateurs" asp-action="Index">
+                <i class="bi bi-person-gear" aria-hidden="true"></i> @Localizer["Nav_Utilisateurs"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Agences" asp-action="Index">
+                <i class="bi bi-building" aria-hidden="true"></i> @Localizer["Nav_Agences"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Audit" asp-action="Index">
+                <i class="bi bi-clock-history" aria-hidden="true"></i> @Localizer["Nav_Audit"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Documents" asp-action="Index">
+                <i class="bi bi-folder2-open" aria-hidden="true"></i> @Localizer["Nav_Documents"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Notifications" asp-action="Index">
+                <i class="bi bi-bell" aria-hidden="true"></i> @Localizer["Nav_Notifications"]
+            </a>
+
+            <a class="ak-nav-link" asp-controller="Reporting" asp-action="Index">
+                <i class="bi bi-graph-up" aria-hidden="true"></i> @Localizer["Nav_Reporting"]
+            </a>
+        </nav>
+    </aside>
+
+    <div class="ak-backdrop" id="akBackdrop" aria-hidden="true"></div>
+
+    <div class="ak-main">
+        <header class="ak-topbar" role="banner">
+            <button id="akToggleSidebar" class="btn btn-outline-secondary" type="button"
+                    aria-label="@Localizer["A11y_ToggleMenu"]">
+                <i class="bi bi-list" aria-hidden="true"></i>
+            </button>
+
+            <div class="flex-grow-1">
+                <h1 class="h5 m-0 d-none d-sm-block text-truncate">
+                    @ViewData["Title"]
+                </h1>
+            </div>
+
+            <!-- Sélecteur de langue multilingue (Kirundi, Français, English, Kiswahili) -->
+            <partial name="_LanguageSelector" />
+
+            <!-- Bascule thème clair/sombre -->
+            <button id="akThemeToggle" class="btn btn-outline-secondary" type="button" aria-label="@Localizer["A11y_ToggleTheme"]">
+                <i id="akThemeIcon" class="bi bi-moon-stars" aria-hidden="true"></i>
+            </button>
+
+            <partial name="_LoginPartial" />
+        </header>
+
+        <main class="ak-content" id="main-content" role="main" tabindex="-1">
+            @RenderBody()
+        </main>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/app-shell.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

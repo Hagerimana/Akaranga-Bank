@@ -1,0 +1,205 @@
+@{
+    ViewData["Title"] = SharedLocalizer["Nav_Dashboard"].Value;
+}
+
+<div class="py-4">
+    <!-- Hero Section -->
+    <div class="p-5 mb-4 bg-body-tertiary rounded-3 shadow-sm border">
+        <div class="container-fluid py-2">
+            <div class="d-flex align-items-center gap-3 mb-3">
+                <span class="badge bg-primary fs-6 px-3 py-2">AB</span>
+                <span class="text-muted fw-semibold">@SharedLocalizer["AppTitle"] · @SharedLocalizer["BrandSub"]</span>
+            </div>
+            <h1 class="display-5 fw-bold text-primary">@SharedLocalizer["Home_WelcomeTitle"]</h1>
+            <p class="col-md-9 fs-5 text-secondary">
+                @SharedLocalizer["Home_WelcomeSubtitle"]
+            </p>
+        </div>
+    </div>
+
+    <!-- Section Quick Access -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h4 mb-0 fw-bold">
+            <i class="bi bi-grid-fill me-2 text-primary"></i>@SharedLocalizer["Home_QuickAccess"]
+        </h2>
+    </div>
+
+    <div class="row g-4">
+        <!-- Branche Opérations -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-3 bg-primary-subtle text-primary rounded-3">
+                            <i class="bi bi-wallet2 fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="h5 card-title mb-1 fw-bold">@SharedLocalizer["Nav_Operations"]</h3>
+                            <span class="badge bg-primary-subtle text-primary">Core Banking</span>
+                        </div>
+                    </div>
+                    <p class="card-text text-secondary mb-4">
+                        @SharedLocalizer["Home_OperationsDesc"]
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a asp-controller="Comptes" asp-action="Index" class="btn btn-sm btn-outline-primary">
+                            @SharedLocalizer["Nav_Comptes"]
+                        </a>
+                        <a asp-controller="Operations" asp-action="Journal" class="btn btn-sm btn-outline-secondary">
+                            @SharedLocalizer["Nav_Journal"]
+                        </a>
+                        <a asp-controller="VirementsInterAgences" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                            @SharedLocalizer["Nav_Virements"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Branche Agences -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-3 bg-success-subtle text-success rounded-3">
+                            <i class="bi bi-building fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="h5 card-title mb-1 fw-bold">@SharedLocalizer["Nav_Agences"]</h3>
+                            <span class="badge bg-success-subtle text-success">Branches Network</span>
+                        </div>
+                    </div>
+                    <p class="card-text text-secondary mb-4">
+                        @SharedLocalizer["Home_AgencesDesc"]
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a asp-controller="Agences" asp-action="Index" class="btn btn-sm btn-outline-success">
+                            @SharedLocalizer["Nav_Agences"]
+                        </a>
+                        <a asp-controller="Agences" asp-action="Create" class="btn btn-sm btn-outline-secondary">
+                            + @SharedLocalizer["Common_Create"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Branche Clients -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-3 bg-info-subtle text-info rounded-3">
+                            <i class="bi bi-people fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="h5 card-title mb-1 fw-bold">@SharedLocalizer["Nav_Clients"]</h3>
+                            <span class="badge bg-info-subtle text-info">KYC &amp; Accounts</span>
+                        </div>
+                    </div>
+                    <p class="card-text text-secondary mb-4">
+                        Gestion complète de la relation client, vérification des pièces d'identité et historique.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a asp-controller="Clients" asp-action="Index" class="btn btn-sm btn-outline-info">
+                            @SharedLocalizer["Nav_Clients"]
+                        </a>
+                        <a asp-controller="Clients" asp-action="Create" class="btn btn-sm btn-outline-secondary">
+                            + @SharedLocalizer["Common_Create"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Branche Prêts & Cartes -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-3 bg-warning-subtle text-warning rounded-3">
+                            <i class="bi bi-cash-coin fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="h5 card-title mb-1 fw-bold">@SharedLocalizer["Nav_Prets"] &amp; @SharedLocalizer["Nav_Cartes"]</h3>
+                            <span class="badge bg-warning-subtle text-warning">Crédit &amp; Moyens</span>
+                        </div>
+                    </div>
+                    <p class="card-text text-secondary mb-4">
+                        Suivi des dossiers de crédits, amortissements et cartes bancaires.
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a asp-controller="Prets" asp-action="Index" class="btn btn-sm btn-outline-warning">
+                            @SharedLocalizer["Nav_Prets"]
+                        </a>
+                        <a asp-controller="Cartes" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                            @SharedLocalizer["Nav_Cartes"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Branche Conformité -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-3 bg-danger-subtle text-danger rounded-3">
+                            <i class="bi bi-shield-check fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="h5 card-title mb-1 fw-bold">@SharedLocalizer["Nav_Conformite"]</h3>
+                            <span class="badge bg-danger-subtle text-danger">AML / CFT / CNRF</span>
+                        </div>
+                    </div>
+                    <p class="card-text text-secondary mb-4">
+                        @SharedLocalizer["Home_ConformiteDesc"]
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a asp-controller="TableauBordConformite" asp-action="Index" class="btn btn-sm btn-outline-danger">
+                            @SharedLocalizer["Nav_Dashboard"]
+                        </a>
+                        <a asp-controller="Conformite" asp-action="Alertes" class="btn btn-sm btn-outline-secondary">
+                            @SharedLocalizer["Nav_AlertesAML"]
+                        </a>
+                        <a asp-controller="CNRF" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                            @SharedLocalizer["Nav_CNRF"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Branche Administration & Reporting -->
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm hover-shadow transition">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-3 bg-secondary-subtle text-secondary rounded-3">
+                            <i class="bi bi-gear fs-3"></i>
+                        </div>
+                        <div>
+                            <h3 class="h5 card-title mb-1 fw-bold">@SharedLocalizer["Nav_Administration"]</h3>
+                            <span class="badge bg-secondary-subtle text-secondary">System &amp; Reports</span>
+                        </div>
+                    </div>
+                    <p class="card-text text-secondary mb-4">
+                        @SharedLocalizer["Home_AdminDesc"]
+                    </p>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a asp-controller="AdminUtilisateurs" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                            @SharedLocalizer["Nav_Utilisateurs"]
+                        </a>
+                        <a asp-controller="Reporting" asp-action="Index" class="btn btn-sm btn-outline-primary">
+                            @SharedLocalizer["Nav_Reporting"]
+                        </a>
+                        <a asp-controller="Audit" asp-action="Index" class="btn btn-sm btn-outline-secondary">
+                            @SharedLocalizer["Nav_Audit"]
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

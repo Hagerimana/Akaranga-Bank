@@ -1,0 +1,47 @@
+﻿@page
+@model LoginWith2faModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Vérification en deux étapes";
+    ViewData["Subtitle"] = "Votre connexion est protégée par une application d'authentification. " +
+        "Saisissez le code à 6 chiffres affiché par celle-ci.";
+}
+
+<form method="post" asp-route-returnUrl="@Model.ReturnUrl">
+    <input asp-for="RememberMe" type="hidden" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger login-validation" role="alert"></div>
+
+    <div class="mb-3">
+        <label asp-for="Input.TwoFactorCode" class="form-label login-label">Code d'authentification</label>
+
+        <input asp-for="Input.TwoFactorCode" class="form-control login-input" autocomplete="one-time-code"
+               inputmode="numeric" maxlength="7" placeholder="123456"
+               style="letter-spacing:.35em;font-size:1.25rem;text-align:center;" required autofocus />
+
+        <span asp-validation-for="Input.TwoFactorCode" class="text-danger small"></span>
+    </div>
+
+    <div class="form-check mb-4">
+        <input asp-for="Input.RememberMachine" class="form-check-input" />
+        <label asp-for="Input.RememberMachine" class="form-check-label login-remember">
+            Mémoriser cet appareil
+        </label>
+    </div>
+
+    <button type="submit" class="login-submit">
+        Se connecter
+        <span aria-hidden="true">→</span>
+    </button>
+
+    <p class="login-help">
+        Pas accès à votre application d'authentification ?
+        <a id="recovery-code-login" asp-page="./LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl">
+            Utiliser un code de secours
+        </a>
+    </p>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

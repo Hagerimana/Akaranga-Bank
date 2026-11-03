@@ -1,0 +1,40 @@
+@page
+@model ShowRecoveryCodesModel
+
+@{
+    ViewData["Title"] = "Codes de récupération";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<h3>@ViewData["Title"]</h3>
+
+<div class="alert alert-warning" role="alert">
+    <p>
+        <strong>Conserve ces codes dans un endroit sûr.</strong>
+    </p>
+    <p>
+        Si tu perds l'accès à ton application d'authentification,
+        utilise l'un de ces codes pour te connecter.
+        Chaque code ne peut être utilisé qu'une seule fois.
+    </p>
+</div>
+
+@if (Model.RecoveryCodes is null || Model.RecoveryCodes.Length == 0)
+{
+    <div class="alert alert-danger">
+        Aucun code de récupération n'a été généré.
+    </div>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var recoveryCode in Model.RecoveryCodes)
+        {
+            <li class="list-group-item font-monospace">
+                @recoveryCode
+            </li>
+        }
+    </ul>
+}

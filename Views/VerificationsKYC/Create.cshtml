@@ -1,0 +1,48 @@
+@* Chap 6 *@
+@model AkarangaBankMvc.Web.ViewModels.VerificationKYCCreateViewModel
+@{
+    ViewData["Title"] = "Nouvelle vérification KYC";
+}
+
+<h1>Nouvelle vérification KYC</h1>
+
+<p class="text-muted">
+    Client : <strong>@Model.ClientNumero - @Model.ClientNom</strong>
+</p>
+
+<form asp-action="Create" method="post">
+    <input type="hidden" asp-for="ClientId" />
+    <input type="hidden" asp-for="ClientNom" />
+    <input type="hidden" asp-for="ClientNumero" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="TypeDocument" class="form-label"></label>
+        <select asp-for="TypeDocument" class="form-select">
+            <option value="CNI">CNI</option>
+            <option value="Passeport">Passeport</option>
+            <option value="Permis">Permis de conduire</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="NumeroDocument" class="form-label"></label>
+        <input asp-for="NumeroDocument" class="form-control" />
+        <span asp-validation-for="NumeroDocument" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="CheminDocument" class="form-label"></label>
+        <input asp-for="CheminDocument" class="form-control" placeholder="/uploads/kyc/..." />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Commentaire" class="form-label"></label>
+        <textarea asp-for="Commentaire" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a asp-controller="Clients" asp-action="Details" asp-route-id="@Model.ClientId"
+       class="btn btn-secondary">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

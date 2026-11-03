@@ -1,0 +1,215 @@
+@model AkarangaBankMvc.Web.ViewModels.JournalViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["Nav_Journal"].Value;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0 fw-bold">@SharedLocalizer["Nav_Journal"]</h1>
+        <p class="text-muted mb-0">@SharedLocalizer["Nav_Operations"] · @SharedLocalizer["AppTitle"]</p>
+    </div>
+</div>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @msg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@SharedLocalizer["Common_Close"]"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label small text-muted">@SharedLocalizer["Common_Date"] (Min)</label>
+                <input type="date" name="du" value="@Model.Du?.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label small text-muted">@SharedLocalizer["Common_Date"] (Max)</label>
+                <input type="date" name="au" value="@Model.Au?.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small text-muted">Type</label>
+                <select name="typeOperation" class="form-select">
+                    <option value="">-- @SharedLocalizer["Common_All"] --</option>
+                    <option value="Depot" selected="@(Model.TypeOperation == "Depot")">Dépôt</option>
+                    <option value="Retrait" selected="@(Model.TypeOperation == "Retrait")">Retrait</option>
+                    <option value="Virement" selected="@(Model.TypeOperation == "Virement")">Virement</option>
+                    <option value="VirementInterAgences" selected="@(Model.TypeOperation == "VirementInterAgences")">Virement inter-agences</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i> @SharedLocalizer["Common_Filter"]
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>@SharedLocalizer["Common_Date"]</th>
+                    <th>@SharedLocalizer["Common_Code"]</th>
+                    <th>Type</th>
+                    <th>@SharedLocalizer["Nav_Comptes"]</th>
+                    <th class="text-end">@SharedLocalizer["Common_Amount"]</th>
+                    <th>@SharedLocalizer["Common_Status"]</th>
+                    <th class="text-end">@SharedLocalizer["Common_Actions"]</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (!Model.Operations.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                            @SharedLocalizer["Common_Error"]
+                        </td>
+                    </tr>
+                }
+
+                @foreach (var op in Model.Operations)
+                {
+                    var lignes = op.Ecritures.OrderBy(e => e.Id).ToList();
+                    var totalDebit = lignes
+                        .Where(e => e.Sens == "Debit")
+                        .Sum(e => e.Montant);
+                    var totalCredit = lignes
+                        .Where(e => e.Sens == "Credit")
+                        .Sum(e => e.Montant);
+
+                    <tr>
+                        <td>@op.DateOperation.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td><code>@op.Reference</code></td>
+                        <td><span class="badge bg-secondary">@op.TypeOperation</span></td>
+                        <td>@op.Compte.NumeroCompte</td>
+
+                        <td class="text-end fw-bold">
+                            @op.Montant.ToString("N2") @op.Devise
+                        </td>
+
+                        <td>
+                            <span class="badge @(op.Statut == "Valide"
+                                  ? "bg-success"
+                                  : op.Statut == "EnAttente"
+                                    ? "bg-warning text-dark"
+                                    : "bg-secondary")">
+                                @op.Statut
+                            </span>
+                        </td>
+
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="Releve" asp-route-id="@op.CompteId" class="btn btn-outline-primary btn-sm">
+                                    Relevé
+                                </a>
+                                <a asp-controller="DocumentsPdf" asp-action="RecuOperation" asp-route-operationId="@op.Id" class="btn btn-outline-secondary btn-sm" title="Reçu (PDF)">
+                                    <i class="bi bi-receipt" aria-hidden="true"></i> PDF
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="7" class="bg-body-tertiary">
+                            <details class="p-2">
+                                <summary class="text-primary fw-semibold">
+                                    Écritures (@lignes.Count)
+                                </summary>
+
+                                <div class="table-responsive mt-3">
+                                    <table class="table table-bordered table-sm mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>@SharedLocalizer["Nav_Comptes"]</th>
+                                                <th>Libellé</th>
+                                                <th class="text-end">Débit</th>
+                                                <th class="text-end">Crédit</th>
+                                                <th>Devise</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            @foreach (var e in lignes)
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        @if (e.Compte is not null)
+                                                        {
+                                                            <code>@e.Compte.NumeroCompte</code>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>Compte ID @e.CompteId</span>
+                                                        }
+                                                    </td>
+
+                                                    <td>@e.Libelle</td>
+
+                                                    <td class="text-end">
+                                                        @(e.Sens == "Debit"
+                                                            ? e.Montant.ToString("N2")
+                                                            : "—")
+                                                    </td>
+
+                                                    <td class="text-end">
+                                                        @(e.Sens == "Credit"
+                                                            ? e.Montant.ToString("N2")
+                                                            : "—")
+                                                    </td>
+
+                                                    <td>@e.Devise</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+
+                                        <tfoot class="table-light">
+                                            <tr>
+                                                <th colspan="2">Totaux des écritures</th>
+                                                <th class="text-end">
+                                                    @totalDebit.ToString("N2")
+                                                </th>
+                                                <th class="text-end">
+                                                    @totalCredit.ToString("N2")
+                                                </th>
+                                                <th>@op.Devise</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </details>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="mt-4" aria-label="Pagination">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link" asp-action="Journal" asp-route-page="@i"
+                       asp-route-du="@Model.Du?.ToString("yyyy-MM-dd")" asp-route-au="@Model.Au?.ToString("yyyy-MM-dd")"
+                       asp-route-typeOperation="@Model.TypeOperation">
+                        @i
+                    </a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

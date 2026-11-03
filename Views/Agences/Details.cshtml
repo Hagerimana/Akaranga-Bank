@@ -1,0 +1,102 @@
+@* @model AkarangaBankMvc.Web.Models.Agence
+@{
+    ViewData["Title"] = "Détails de l'agence";
+}
+
+<h1>Détails de l'agence</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Code</dt>
+    <dd class="col-sm-9">@Model.Code</dd>
+
+    <dt class="col-sm-3">Nom</dt>
+    <dd class="col-sm-9">@Model.Nom</dd>
+
+    <dt class="col-sm-3">Ville</dt>
+    <dd class="col-sm-9">@Model.Ville</dd>
+
+    <dt class="col-sm-3">Statut</dt>
+    <dd class="col-sm-9">
+        @if (Model.EstSiege)
+        {
+            <span class="badge bg-primary">Siège</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">Agence</span>
+        }
+    </dd>
+
+    <dt class="col-sm-3">Date de création</dt>
+    <dd class="col-sm-9">@Model.DateCreation.ToString("dd/MM/yyyy HH:mm")</dd>
+</dl>
+
+<a asp-action="Index" class="btn btn-secondary">Retour à la liste</a> *@
+
+@* ====================*_Chap 5_*======================== *@
+@model AkarangaBankMvc.Web.ViewModels.AgenceDetailsViewModel
+@{
+    ViewData["Title"] = "Détails de l'agence";
+}
+
+<h1>Détails de l'agence</h1>
+
+<dl class="row">
+    <dt class="col-sm-3">Code</dt>
+    <dd class="col-sm-9">@Model.Agence.Code</dd>
+
+    <dt class="col-sm-3">Nom</dt>
+    <dd class="col-sm-9">@Model.Agence.Nom</dd>
+
+    <dt class="col-sm-3">Ville</dt>
+    <dd class="col-sm-9">@Model.Agence.Ville</dd>
+
+    <dt class="col-sm-3">Statut</dt>
+    <dd class="col-sm-9">
+        @if (Model.Agence.EstSiege)
+        {
+            <span class="badge bg-primary">Siège</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">Agence</span>
+        }
+    </dd>
+
+    <dt class="col-sm-3">Date de création</dt>
+    <dd class="col-sm-9">@Model.Agence.DateCreation.ToString("dd/MM/yyyy HH:mm")</dd>
+</dl>
+
+<h2>Activité de l'agence</h2>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">@Model.NombreClients</h5>
+                <p class="card-text">Client(s)</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">@Model.NombreComptes</h5>
+                <p class="card-text">Compte(s)</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <h5 class="card-title">@Model.NombreUtilisateurs</h5>
+                <p class="card-text">Utilisateur(s)</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Edit" asp-route-id="@Model.Agence.Id" class="btn btn-warning">Modifier</a>
+    <a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>
+</div>

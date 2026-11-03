@@ -1,0 +1,250 @@
+@model AkarangaBankMvc.Web.ViewModels.PretDemandeViewModel
+
+@{
+    ViewData["Title"] = "Nouvelle demande de prêt";
+    var types = ViewBag.TypesPret as IEnumerable<TypePret>
+        ?? Enumerable.Empty<TypePret>();
+}
+
+<h1>Nouvelle demande de prêt</h1>
+
+<div class="alert alert-info" role="status">
+    Le taux appliqué est la moyenne des taux du type de prêt.
+    La mensualité est calculée à amortissement constant et reste une
+    estimation tant que la demande n'est pas validée.
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="ClientId" class="form-label"></label>
+
+                <select asp-for="ClientId" asp-items="ViewBag.Clients"
+                        class="form-select" id="ClientId">
+                    <option value="">-- Sélectionner un client --</option>
+                </select>
+
+                <span asp-validation-for="ClientId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CompteDebitId" class="form-label"></label>
+
+                <select asp-for="CompteDebitId" class="form-select"
+                        id="CompteDebitId">
+                    <option value="">-- Sélectionner un compte --</option>
+
+                    @foreach (var compte in ViewBag.ComptesItems)
+                    {
+                        <option value="@compte.Id"
+                                data-client-id="@compte.ClientId">
+                            @compte.Libelle
+                        </option>
+                    }
+                </select>
+
+                <div class="form-text">
+                    Seuls les comptes actifs du client sélectionné sont proposés.
+                </div>
+
+                <span asp-validation-for="CompteDebitId"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TypePretId" class="form-label"></label>
+
+                <select asp-for="TypePretId" class="form-select"
+                        id="TypePretId">
+                    <option value="">-- Sélectionner un type --</option>
+
+                    @foreach (var type in types)
+                    {
+                        <option value="@type.Id"
+                                data-min="@type.MontantMin"
+                                data-max="@type.MontantMax"
+                                data-duree-min="@type.DureeMinMois"
+                                data-duree-max="@type.DureeMaxMois"
+                                data-taux="@type.TauxMoyen">
+                            @type.Libelle — @type.TauxMin.ToString("N0") à
+                            @type.TauxMax.ToString("N0") %
+                        </option>
+                    }
+                </select>
+
+                <div class="form-text" id="typeHint"></div>
+
+                <span asp-validation-for="TypePretId"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="MontantPrincipal" class="form-label"></label>
+
+                    <input asp-for="MontantPrincipal" type="number"
+                           min="1" step="0.01" class="form-control"
+                           id="MontantPrincipal" />
+
+                    <span asp-validation-for="MontantPrincipal"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DureeMois" class="form-label"></label>
+
+                    <input asp-for="DureeMois" type="number"
+                           min="1" max="360" step="1" class="form-control"
+                           id="DureeMois" />
+
+                    <span asp-validation-for="DureeMois"
+                          class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Commentaire" class="form-label"></label>
+
+                <textarea asp-for="Commentaire" rows="3" maxlength="500"
+                          class="form-control"></textarea>
+
+                <span asp-validation-for="Commentaire"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="alert alert-secondary" id="simulation" role="status">
+                Renseignez le type, le montant et la durée pour afficher
+                la mensualité estimée.
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Enregistrer la demande
+            </button>
+
+            <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        (function () {
+            const client = document.getElementById('ClientId');
+            const compte = document.getElementById('CompteDebitId');
+            const type = document.getElementById('TypePretId');
+            const montant = document.getElementById('MontantPrincipal');
+            const duree = document.getElementById('DureeMois');
+            const hint = document.getElementById('typeHint');
+            const simulation = document.getElementById('simulation');
+
+            function filtrerComptes() {
+                const clientId = client.value;
+                let premierVisible = null;
+
+                Array.from(compte.options).forEach(function (option) {
+                    if (!option.value) {
+                        return;
+                    }
+
+                    const visible = !clientId ||
+                        option.dataset.clientId === clientId;
+
+                    option.hidden = !visible;
+                    option.disabled = !visible;
+
+                    if (visible && premierVisible === null) {
+                        premierVisible = option;
+                    }
+                });
+
+                if (compte.selectedOptions[0] &&
+                    compte.selectedOptions[0].hidden) {
+                    compte.value = '';
+                }
+            }
+
+            function formater(valeur) {
+                return Number(valeur).toLocaleString('fr-FR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            async function simuler() {
+                if (!type.value || !montant.value || !duree.value) {
+                    simulation.textContent =
+                        'Renseignez le type, le montant et la durée pour ' +
+                        'afficher la mensualité estimée.';
+                    return;
+                }
+
+                try {
+                    const url = '/Prets/Simuler?typePretId=' +
+                        encodeURIComponent(type.value) +
+                        '&montant=' + encodeURIComponent(montant.value) +
+                        '&dureeMois=' + encodeURIComponent(duree.value);
+
+                    const reponse = await fetch(url);
+                    const data = await reponse.json();
+
+                    if (!data.ok) {
+                        simulation.className = 'alert alert-warning';
+                        simulation.textContent = data.message;
+                        return;
+                    }
+
+                    simulation.className = 'alert alert-secondary';
+                    simulation.innerHTML =
+                        '<strong>Taux appliqué :</strong> ' +
+                        formater(data.tauxInteret) + ' % — ' +
+                        '<strong>Mensualité :</strong> ' +
+                        formater(data.mensualite) + ' BIF — ' +
+                        '<strong>Total remboursé :</strong> ' +
+                        formater(data.totalRembourse) + ' BIF — ' +
+                        '<strong>Intérêts :</strong> ' +
+                        formater(data.totalInterets) + ' BIF';
+                } catch (e) {
+                    simulation.className = 'alert alert-danger';
+                    simulation.textContent =
+                        'La simulation est momentanément indisponible.';
+                }
+            }
+
+            function actualiserType() {
+                const option = type.selectedOptions[0];
+
+                if (!option || !option.value) {
+                    hint.textContent = '';
+                    return;
+                }
+
+                montant.min = option.dataset.min;
+                montant.max = option.dataset.max;
+                duree.min = option.dataset.dureeMin;
+                duree.max = option.dataset.dureeMax;
+
+                hint.textContent =
+                    'Montant : ' + formater(option.dataset.min) + ' à ' +
+                    formater(option.dataset.max) + ' BIF. Durée : ' +
+                    option.dataset.dureeMin + ' à ' +
+                    option.dataset.dureeMax + ' mois. Taux moyen : ' +
+                    formater(option.dataset.taux) + ' %.';
+
+                simuler();
+            }
+
+            client.addEventListener('change', filtrerComptes);
+            type.addEventListener('change', actualiserType);
+            montant.addEventListener('input', simuler);
+            duree.addEventListener('input', simuler);
+
+            filtrerComptes();
+            actualiserType();
+        })();
+    </script>
+}

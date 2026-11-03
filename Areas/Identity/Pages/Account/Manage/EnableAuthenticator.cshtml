@@ -1,0 +1,82 @@
+﻿@page
+@model EnableAuthenticatorModel
+@inject AkarangaBankMvc.Web.Services.IQrCodeService QrCodeService
+
+@{
+    ViewData["Title"] = "Configurer l'application d'authentification";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+
+    var qrBase64 =
+        QrCodeService.GenerateQrCodeBase64(Model.AuthenticatorUri);
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<h3>@ViewData["Title"]</h3>
+
+<div>
+    <p>
+        Pour activer la double authentification, suivez les étapes suivantes.
+    </p>
+
+    <ol class="list">
+        <li>
+            <p>
+                Installez une application d'authentification sur votre téléphone,
+                par exemple Microsoft Authenticator ou Google Authenticator.
+            </p>
+        </li>
+
+        <li>
+            <p>
+                Scannez ce QR code avec votre application.
+                Vous pouvez également saisir manuellement cette clé :
+                <kbd>@Model.SharedKey</kbd>.
+            </p>
+
+            <div class="mb-3">
+                <img src="data:image/png;base64,@qrBase64" alt="QR code de configuration de la double authentification"
+                     width="220" height="220" class="img-fluid" />
+            </div>
+
+            <p class="text-muted">
+                Cette clé et ce QR code sont confidentiels.
+                Ne les partagez pas.
+            </p>
+        </li>
+
+        <li>
+            <p>
+                Saisissez le code affiché par votre application
+                pour confirmer la configuration.
+            </p>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <form id="send-code" method="post">
+                        <div class="form-floating mb-3">
+                            <input asp-for="Input.Code" class="form-control" autocomplete="one-time-code"
+                                   inputmode="numeric" placeholder="Code de vérification" />
+
+                            <label asp-for="Input.Code" class="control-label form-label">
+                                Code de vérification
+                            </label>
+
+                            <span asp-validation-for="Input.Code" class="text-danger"></span>
+                        </div>
+
+                        <button type="submit" class="w-100 btn btn-lg btn-primary">
+                            Vérifier et activer la 2FA
+                        </button>
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                    </form>
+                </div>
+            </div>
+        </li>
+    </ol>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

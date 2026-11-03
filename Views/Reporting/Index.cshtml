@@ -1,0 +1,142 @@
+@model AkarangaBankMvc.Web.ViewModels.ReportingDashboardViewModel
+@{
+    ViewData["Title"] = "Tableau de bord financier & Reporting";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0">Reporting & États Financiers</h1>
+        <p class="text-muted mb-0">Synthèse d'activité, balances comptables et rapports réglementaires (BRB & CNRF)</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Journal" class="btn btn-outline-primary">
+            <i class="bi bi-journal-text me-1"></i> Journal
+        </a>
+        <a asp-action="Balance" class="btn btn-outline-primary">
+            <i class="bi bi-scale me-1"></i> Balance Générale
+        </a>
+        <a asp-action="CompteResultat" class="btn btn-outline-primary">
+            <i class="bi bi-graph-up me-1"></i> Résultat
+        </a>
+        <a asp-action="Bilan" class="btn btn-outline-primary">
+            <i class="bi bi-bank me-1"></i> Bilan
+        </a>
+        <a asp-action="RapportAML" class="btn btn-outline-danger">
+            <i class="bi bi-shield-exclamation me-1"></i> Rapport AML
+        </a>
+    </div>
+</div>
+
+<!-- Cartes d'indicateurs clés -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100 border-start border-primary border-4">
+            <div class="card-body">
+                <span class="text-muted small text-uppercase fw-bold">Dépôts Clients (Total)</span>
+                <h3 class="h4 my-2 text-primary">@Model.TotalDepots.ToString("N2") BIF</h3>
+                <span class="small text-muted"><i class="bi bi-wallet2 text-primary"></i> Collecte auprès de la clientèle</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100 border-start border-warning border-4">
+            <div class="card-body">
+                <span class="text-muted small text-uppercase fw-bold">Retraits Espèces</span>
+                <h3 class="h4 my-2 text-warning">@Model.TotalRetraits.ToString("N2") BIF</h3>
+                <span class="small text-muted"><i class="bi bi-cash-stack text-warning"></i> Décaissements guichet</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100 border-start border-success border-4">
+            <div class="card-body">
+                <span class="text-muted small text-uppercase fw-bold">Virements Effectués</span>
+                <h3 class="h4 my-2 text-success">@Model.TotalVirements.ToString("N2") BIF</h3>
+                <span class="small text-muted"><i class="bi bi-arrow-left-right text-success"></i> Flux scripturaux</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="card shadow-sm h-100 border-start border-info border-4">
+            <div class="card-body">
+                <span class="text-muted small text-uppercase fw-bold">Prêts en cours (Actif)</span>
+                <h3 class="h4 my-2 text-info">@Model.TotalCreditsEnCours.ToString("N2") BIF</h3>
+                <span class="small text-muted"><i class="bi bi-cash-coin text-info"></i> Encours total financé</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Contrôle d'équilibre comptable -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Contrôle d'équilibre comptable (Partie Double)</h2>
+                @if (Model.EstBalanceEquilibree)
+                {
+                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i> Équilibrée</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger"><i class="bi bi-exclamation-triangle me-1"></i> Déséquilibre détecté</span>
+                }
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    Conformément aux règles prudentielles de la Banque de la République du Burundi (BRB), la somme absolue des débits doit être rigoureusement égale à la somme des crédits.
+                </p>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>Nombre de comptes actifs :</span>
+                    <strong>@Model.NombreComptesActifs</strong>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>Nombre de clients enregistrés :</span>
+                    <strong>@Model.NombreClients</strong>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>Volume cumulé des transactions :</span>
+                    <strong>@Model.VolumeTotalTransactions.ToString("N2") BIF</strong>
+                </div>
+                <div class="mt-4 text-end">
+                    <a asp-action="Balance" class="btn btn-sm btn-primary">
+                        Consulter la Balance Générale <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Surveillance AML & Déclarations -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Conformité LBC/FT (Mois en cours)</h2>
+                <span class="badge bg-danger">@Model.TotalAlertesAmlMois alerte(s)</span>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-3">
+                    Dispositif de veille automatisé contre le blanchiment de capitaux et le financement du terrorisme.
+                </p>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>Alertes AML détectées ce mois :</span>
+                    <strong class="text-danger">@Model.TotalAlertesAmlMois</strong>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>Déclarations de soupçon (CNRF) transmises :</span>
+                    <strong class="text-primary">@Model.TotalDeclarationsCnrfMois</strong>
+                </div>
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>Seuil réglementaire automatique :</span>
+                    <strong>5 000 000 BIF</strong>
+                </div>
+                <div class="mt-4 text-end">
+                    <a asp-action="RapportAML" class="btn btn-sm btn-outline-danger">
+                        Voir le Rapport AML Détaillé <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

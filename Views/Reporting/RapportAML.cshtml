@@ -1,0 +1,138 @@
+@model AkarangaBankMvc.Web.ViewModels.RapportAMLViewModel
+@{
+    ViewData["Title"] = $"Rapport AML - {Model.Mois:D2}/{Model.Annee}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0">Rapport Mensuel de Conformité LBC/FT</h1>
+        <p class="text-muted mb-0">Suivi des alertes de blanchiment et des déclarations transmises à la CNRF (@Model.Mois:D2/@Model.Annee)</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button onclick="window.print()" class="btn btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i> Imprimer
+        </button>
+    </div>
+</div>
+
+<div class="card mb-4 no-print">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-5">
+                <label for="mois" class="form-label">Mois</label>
+                <select id="mois" name="mois" class="form-select">
+                    @for (int m = 1; m <= 12; m++)
+                    {
+                        <option value="@m" selected="@(Model.Mois == m)">Mois @m</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-5">
+                <label for="annee" class="form-label">Année</label>
+                <input type="number" id="annee" name="annee" value="@Model.Annee" class="form-control" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-secondary w-100">Afficher</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-md-3">
+        <div class="card shadow-sm h-100 border-start border-danger border-4">
+            <div class="card-body">
+                <span class="text-muted small text-uppercase fw-bold">Alertes Critiques</span>
+                <h3 class="h4 my-2 text-danger">@Model.AlertesCritiques</h3>
+                <span class="small text-muted">Gel ou examen immédiat</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card shadow-sm h-100 border-start border-warning border-4">
+            <div class="card-body">
+                <span class="text-muted small text-uppercase fw-bold">Alertes Élevées / Moyennes</span>
+                <h3 class="h4 my-2 text-warning">@(Model.AlertesElevees + Model.AlertesMoyennes)</h3>
+                <span class="small text-muted">Surveillance renforcée</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card shadow-sm h-100 border-start border-success border-4">
+            <div class="card-body">
+                <span class="text-muted small text-uppercase fw-bold">Alertes Traitées</span>
+                <h3 class="h4 my-2 text-success">@Model.AlertesTraitees / @Model.TotalAlertes</h3>
+                <span class="small text-muted">Clôturées par les analystes</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card shadow-sm h-100 border-start border-primary border-4">
+            <div class="card-body">
+                <span class="text-muted small text-uppercase fw-bold">Déclarations CNRF</span>
+                <h3 class="h4 my-2 text-primary">@Model.DeclarationsCNRF</h3>
+                <span class="small text-muted">Dossiers transmis à l'autorité</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-light">
+        <h2 class="h6 mb-0">Détail des alertes enregistrées sur la période</h2>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-sm table-hover align-middle mb-0" role="table" aria-label="Liste des alertes AML">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Date alerte</th>
+                    <th scope="col">Niveau de risque</th>
+                    <th scope="col">Type / Motif</th>
+                    <th scope="col">Client concerné</th>
+                    <th scope="col">Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Alertes.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">Aucune alerte enregistrée pour ce mois.</td>
+                    </tr>
+                }
+                @foreach (var a in Model.Alertes)
+                {
+                    var badge = a.Niveau switch
+                    {
+                        "Critique" => "bg-danger",
+                        "Eleve" or "Élevé" => "bg-warning text-dark",
+                        "Moyen" => "bg-info text-dark",
+                        _ => "bg-secondary"
+                    };
+
+                    <tr>
+                        <td class="small">@a.DateAlerte.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td><span class="badge @badge">@a.Niveau</span></td>
+                        <td>
+                            <strong>@a.TypeAlerte</strong>
+                            @if (!string.IsNullOrEmpty(a.Description))
+                            {
+                                <div class="small text-muted">@a.Description</div>
+                            }
+                        </td>
+                        <td>@(a.Client != null ? $"{a.Client.Nom} {a.Client.Prenom} ({a.Client.NumeroClient})" : $"Client #{a.ClientId}")</td>
+                        <td>
+                            @if (a.Statut == "Traitee" || a.Statut == "Classee")
+                            {
+                                <span class="badge bg-success">Traitée</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">@a.Statut</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,75 @@
+@using Microsoft.AspNetCore.Builder
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.Extensions.Options
+@using Microsoft.Extensions.Localization
+@using AkarangaBankMvc.Web.Resources
+@inject IOptions<RequestLocalizationOptions> LocOptions
+@inject IStringLocalizer<SharedResource> SharedLocalizer
+
+@{
+    var requestCulture = Context.Features.Get<IRequestCultureFeature>();
+    var currentCulture = requestCulture?.RequestCulture.UICulture.Name ?? "fr-BI";
+    var returnUrl = string.IsNullOrEmpty(Context.Request.Path) ? "/" : $"{Context.Request.Path.Value}{Context.Request.QueryString.Value}";
+
+    if (currentCulture.StartsWith("rn", StringComparison.OrdinalIgnoreCase))
+    {
+        currentCulture = "rn-BI";
+    }
+    else if (currentCulture.StartsWith("sw", StringComparison.OrdinalIgnoreCase))
+    {
+        currentCulture = "sw-KE";
+    }
+    else if (currentCulture.StartsWith("en", StringComparison.OrdinalIgnoreCase))
+    {
+        currentCulture = "en-US";
+    }
+    else if (currentCulture.StartsWith("fr", StringComparison.OrdinalIgnoreCase))
+    {
+        currentCulture = "fr-BI";
+    }
+
+    var cultureNames = new Dictionary<string, (string Name, string Flag)>
+    {
+        { "fr-BI", ("Français", "🇧🇮") },
+        { "rn-BI", ("Ikirundi", "🇧🇮") },
+        { "en-US", ("English", "🇺🇸") },
+        { "sw-KE", ("Kiswahili", "🇰🇪") }
+    };
+
+    var currentDisplay = cultureNames.TryGetValue(currentCulture, out var currentInfo)
+        ? $"{currentInfo.Flag} {currentInfo.Name}"
+        : "🌐 Langue";
+}
+
+<div class="dropdown ak-lang-dropdown d-inline-block">
+    <button class="btn btn-outline-secondary dropdown-toggle d-flex align-items-center gap-2"
+            type="button"
+            id="languageDropdown"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            aria-label="@SharedLocalizer["A11y_LanguageSelector"] - @currentDisplay">
+        <span>@currentDisplay</span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="languageDropdown">
+        @foreach (var c in cultureNames)
+        {
+            var isSelected = string.Equals(c.Key, currentCulture, StringComparison.OrdinalIgnoreCase);
+            <li>
+                <form asp-area="" asp-controller="Culture" asp-action="SetLanguage" method="post" class="m-0 p-0">
+                    <input type="hidden" name="culture" value="@c.Key" />
+                    <input type="hidden" name="returnUrl" value="@returnUrl" />
+                    <button type="submit"
+                            class="dropdown-item d-flex align-items-center justify-content-between gap-3 @(isSelected ? "active fw-bold" : "")"
+                            lang="@c.Key"
+                            aria-current="@(isSelected ? "true" : "false")">
+                        <span>@c.Value.Flag @c.Value.Name</span>
+                        @if (isSelected)
+                        {
+                            <i class="bi bi-check2" aria-hidden="true"></i>
+                        }
+                    </button>
+                </form>
+            </li>
+        }
+    </ul>
+</div>

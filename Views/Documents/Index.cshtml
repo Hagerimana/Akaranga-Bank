@@ -1,0 +1,180 @@
+@model AkarangaBankMvc.Web.ViewModels.DocumentListViewModel
+@{
+    ViewData["Title"] = "Gestion documentaire";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0">Gestion documentaire</h1>
+        <p class="text-muted mb-0">Conservation sécurisée et traçabilité des pièces justificatives (LBC/FT)</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Upload" class="btn btn-primary">
+            <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i> Téléverser un document
+        </a>
+        @if (User.IsInRole("admin"))
+        {
+            <form asp-action="Purger" method="post" class="d-inline" onsubmit="return confirm('Purger définitivement les documents supprimés depuis plus de 30 jours ?');">
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="bi bi-trash3" aria-hidden="true"></i> Purge (30j)
+                </button>
+            </form>
+        }
+    </div>
+</div>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @msg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+}
+
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @err
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+}
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="recherche" class="form-label">Recherche</label>
+                <input type="text" id="recherche" name="recherche" value="@Model.Recherche"
+                       class="form-control" placeholder="Titre, nom de fichier, client..." />
+            </div>
+            <div class="col-md-3">
+                <label for="categorie" class="form-label">Catégorie</label>
+                <select id="categorie" name="categorie" class="form-select">
+                    <option value="">Toutes les catégories</option>
+                    <option value="KYC" selected="@(Model.Categorie == "KYC")">KYC (Identité)</option>
+                    <option value="Contrat" selected="@(Model.Categorie == "Contrat")">Contrat</option>
+                    <option value="Comptable" selected="@(Model.Categorie == "Comptable")">Comptable</option>
+                    <option value="AML" selected="@(Model.Categorie == "AML")">AML / Conformité</option>
+                    <option value="RH" selected="@(Model.Categorie == "RH")">RH</option>
+                    <option value="Audit" selected="@(Model.Categorie == "Audit")">Audit</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="statut" class="form-label">Statut</label>
+                <select id="statut" name="statut" class="form-select">
+                    <option value="">Actifs & Archivés</option>
+                    <option value="Actif" selected="@(Model.Statut == "Actif")">Actif</option>
+                    <option value="Archive" selected="@(Model.Statut == "Archive")">Archivé</option>
+                    <option value="Supprime" selected="@(Model.Statut == "Supprime")">Supprimé</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-secondary w-100">
+                    <i class="bi bi-search" aria-hidden="true"></i> Filtrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" role="table" aria-label="Table des documents archivés">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Titre / Fichier</th>
+                    <th scope="col">Catégorie</th>
+                    <th scope="col">Client</th>
+                    <th scope="col">Taille</th>
+                    <th scope="col">Empreinte (SHA-256)</th>
+                    <th scope="col">Statut</th>
+                    <th scope="col">Date</th>
+                    <th scope="col" class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Documents.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            Aucun document trouvé.
+                        </td>
+                    </tr>
+                }
+                @foreach (var doc in Model.Documents)
+                {
+                    var badgeClass = doc.Statut switch
+                    {
+                        "Actif" => "bg-success",
+                        "Archive" => "bg-warning text-dark",
+                        "Supprime" => "bg-danger",
+                        _ => "bg-secondary"
+                    };
+
+                    <tr>
+                        <td>
+                            <strong>@doc.Titre</strong>
+                            <div class="small text-muted">@doc.NomFichierOriginal</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">@doc.Categorie</span>
+                        </td>
+                        <td>
+                            @if (doc.Client is not null)
+                            {
+                                <a asp-controller="Clients" asp-action="Details" asp-route-id="@doc.ClientId">
+                                    @doc.Client.Nom @doc.Client.Prenom
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="text-muted">—</span>
+                            }
+                        </td>
+                        <td>@((doc.TailleOctets / 1024.0).ToString("N1")) Ko</td>
+                        <td>
+                            <code class="small" title="@doc.Sha256Hash">@doc.Sha256Hash.Substring(0, Math.Min(10, doc.Sha256Hash.Length))...</code>
+                        </td>
+                        <td>
+                            <span class="badge @badgeClass">@doc.Statut</span>
+                        </td>
+                        <td>@doc.DateCreation.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="Details" asp-route-id="@doc.Id" class="btn btn-outline-secondary" title="Détails & audit">
+                                    <i class="bi bi-eye" aria-hidden="true"></i>
+                                </a>
+                                @if (doc.Statut != "Supprime")
+                                {
+                                    <a asp-action="Telecharger" asp-route-id="@doc.Id" class="btn btn-outline-primary" title="Télécharger">
+                                        <i class="bi bi-download" aria-hidden="true"></i>
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <span class="small text-muted">Total : @Model.TotalItems document(s)</span>
+            <ul class="pagination pagination-sm m-0">
+                @for (int p = 1; p <= Model.TotalPages; p++)
+                {
+                    <li class="page-item @(p == Model.Page ? "active" : "")">
+                        <a class="page-link" asp-action="Index"
+                           asp-route-page="@p"
+                           asp-route-recherche="@Model.Recherche"
+                           asp-route-categorie="@Model.Categorie"
+                           asp-route-statut="@Model.Statut">@p</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>
+

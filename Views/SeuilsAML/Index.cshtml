@@ -1,0 +1,170 @@
+@using AkarangaBankMvc.Web.Models
+@using System.Globalization
+@model IEnumerable<SeuilAML>
+
+@{
+    ViewData["Title"] = "Seuils AML";
+
+    var seuils = Model.ToList();
+
+    var audits = ViewBag.Audits as IEnumerable<AuditLog>
+        ?? Enumerable.Empty<AuditLog>();
+}
+
+<h1>Seuils AML</h1>
+
+<div class="alert alert-info">
+    Paramètres pédagogiques du projet.
+    Les nouveaux montants sont utilisés par les prochaines analyses.
+    Les opérations et alertes historiques ne sont pas recalculées.
+</div>
+
+@if (TempData["Success"] is string message)
+{
+    <div class="alert alert-success" role="alert">
+        @message
+    </div>
+}
+
+@if (TempData["Error"] is string erreur)
+{
+    <div class="alert alert-danger" role="alert">
+        @erreur
+    </div>
+}
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th scope="col">Code</th>
+                <th scope="col">Libellé</th>
+                <th scope="col">Opération</th>
+                <th scope="col">Devise</th>
+                <th scope="col" class="text-end">Montant actuel</th>
+                <th scope="col">Actif</th>
+                <th scope="col">Modification UTC</th>
+                <th scope="col">Nouveau montant</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (!seuils.Any())
+            {
+                <tr>
+                    <td colspan="8" class="text-center text-muted">
+                        Aucun seuil enregistré.
+                        Vérifie l'exécution de SeuilAMLInitializer.
+                    </td>
+                </tr>
+            }
+
+            @foreach (var seuil in seuils)
+            {
+                <tr>
+                    <td>@seuil.Code</td>
+                    <td>@seuil.Libelle</td>
+                    <td>@seuil.TypeOperation</td>
+                    <td>@seuil.Devise</td>
+
+                    <td class="text-end">
+                        @seuil.Montant.ToString("N2")
+                    </td>
+
+                    <td>
+                        <span class="badge @(seuil.Actif
+                              ? "bg-success"
+                              : "bg-secondary")">
+                            @(seuil.Actif ? "Oui" : "Non")
+                        </span>
+                    </td>
+
+                    <td>
+                        @seuil.DateModification.ToString("dd/MM/yyyy HH:mm:ss")
+                    </td>
+
+                    <td>
+                        <form asp-action="Modifier" method="post" class="d-flex flex-column gap-2">
+
+                            <input type="hidden" name="id" value="@seuil.Id" />
+
+                            <label for="montant-@seuil.Id" class="visually-hidden">
+                                Nouveau montant du seuil
+                                @seuil.Code pour @seuil.TypeOperation
+                            </label>
+
+                            <input id="montant-@seuil.Id" name="nouveauMontant" type="number" min="0.01" step="0.01"
+                                   value="@seuil.Montant.ToString("F2", CultureInfo.InvariantCulture)" class="form-control"
+                                   required />
+
+                            <button type="submit" class="btn btn-primary btn-sm">
+                                Enregistrer
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<p class="text-muted">
+    Le montant doit être strictement positif et comporter
+    au maximum deux décimales.
+    Cette page ne modifie ni le code, ni la devise,
+    ni l'activation du seuil.
+</p>
+
+<h2 class="h4 mt-4">Dernières modifications des seuils</h2>
+
+<p class="text-muted">
+    Les 20 dernières traces d'audit sont affichées.
+</p>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-sm align-middle">
+        <thead>
+            <tr>
+                <th scope="col">Date UTC</th>
+                <th scope="col">Utilisateur</th>
+                <th scope="col">Seuil ID</th>
+                <th scope="col">Ancien montant</th>
+                <th scope="col">Nouveau montant</th>
+                <th scope="col">Détails</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (!audits.Any())
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">
+                        Aucune modification de seuil enregistrée.
+                    </td>
+                </tr>
+            }
+
+            @foreach (var audit in audits)
+            {
+                <tr>
+                    <td>
+                        @audit.DateEvenement.ToString("dd/MM/yyyy HH:mm:ss")
+                    </td>
+
+                    <td>
+                        @(audit.Utilisateur?.NomComplet ?? "Non renseigné")
+                    </td>
+
+                    <td>@audit.EnregistrementId</td>
+                    <td>@audit.ValeurAvant</td>
+                    <td>@audit.ValeurApres</td>
+                    <td>@audit.Details</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<a asp-controller="Conformite" asp-action="Alertes" class="btn btn-secondary">
+    Retour aux alertes
+</a>

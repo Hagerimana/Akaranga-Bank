@@ -1,0 +1,95 @@
+@model IEnumerable<AkarangaBankMvc.Web.Models.VirementInterAgence>
+
+@{
+    ViewData["Title"] = "Historique des virements inter-agences";
+
+    DateTime? du = ViewBag.Du;
+    DateTime? au = ViewBag.Au;
+
+    var lignes = Model.ToList();
+}
+
+<h1>Historique des virements inter-agences</h1>
+
+<form asp-action="Historique" method="get" class="row g-3 mb-3">
+    <div class="col-md-3">
+        <label for="du" class="form-label">Du — UTC</label>
+        <input id="du" name="du" type="date" value="@du?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+
+    <div class="col-md-3">
+        <label for="au" class="form-label">Au — UTC</label>
+        <input id="au" name="au" type="date" value="@au?.ToString("yyyy-MM-dd")" class="form-control" />
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">Filtrer</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th scope="col">Date UTC</th>
+                <th scope="col">Référence</th>
+                <th scope="col">Source</th>
+                <th scope="col">Destination</th>
+                <th scope="col" class="text-end">Montant</th>
+                <th scope="col">Statut</th>
+                <th scope="col">Motif du rejet</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @if (!lignes.Any())
+            {
+                <tr>
+                    <td colspan="7" class="text-center text-muted">
+                        Aucun virement pour cette période.
+                    </td>
+                </tr>
+            }
+
+            @foreach (var v in lignes)
+            {
+                <tr>
+                    <td>@v.DateCreation.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@v.Reference</td>
+
+                    <td>
+                        @v.AgenceSource.Code<br />
+                        @v.Virement.CompteSource.NumeroCompte
+                    </td>
+
+                    <td>
+                        @v.AgenceDestination.Code<br />
+                        @v.Virement.CompteDestination.NumeroCompte
+                    </td>
+
+                    <td class="text-end">
+                        @v.Montant.ToString("N2") @v.Devise
+                    </td>
+
+                    <td>
+                        <span class="badge @(v.Statut == "Rejete"
+                              ? "bg-danger"
+                              : v.Statut == "EnAttente"
+                                ? "bg-warning text-dark"
+                                : v.Statut == "Regle"
+                                    ? "bg-success"
+                                    : "bg-info text-dark")">
+                            @v.Statut
+                        </span>
+                    </td>
+
+                    <td>@v.MotifRejet</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<a asp-action="Index" class="btn btn-secondary">
+    Retour aux demandes en attente
+</a>

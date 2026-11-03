@@ -1,0 +1,48 @@
+@* Chap 6 *@
+@model AkarangaBankMvc.Web.ViewModels.CompteEditViewModel
+@{
+    ViewData["Title"] = "Modifier le compte";
+}
+
+<h1>Modifier le compte</h1>
+
+<p class="text-muted">
+    Client : <strong>@Model.ClientNom</strong> - Solde actuel :
+    <strong>@Model.Solde.ToString("N2") @Model.Devise</strong>
+</p>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="ClientNom" />
+    <input type="hidden" asp-for="Solde" />
+    <input type="hidden" asp-for="Devise" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="NumeroCompte" class="form-label"></label>
+        <input asp-for="NumeroCompte" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="TypeCompteId" class="form-label"></label>
+        <select asp-for="TypeCompteId" asp-items="ViewBag.TypesCompte" class="form-select"></select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="AgenceId" class="form-label"></label>
+        <select asp-for="AgenceId" asp-items="ViewBag.Agences" class="form-select"></select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Statut" class="form-label"></label>
+        <select asp-for="Statut" class="form-select">
+            <option value="Actif">Actif</option>
+            <option value="Bloque">Bloqué</option>
+            <option value="Cloture">Clôturé</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

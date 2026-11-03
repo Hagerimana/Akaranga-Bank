@@ -1,0 +1,35 @@
+@model AkarangaBankMvc.Web.ViewModels.UtilisateurCreateViewModel
+@{
+    ViewData["Title"] = "Nouvel utilisateur";
+}
+<h1>Nouvel utilisateur</h1>
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="NomComplet" class="form-label"></label>
+        <input asp-for="NomComplet" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label"></label>
+        <input asp-for="Password" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Role" class="form-label"></label>
+        <select asp-for="Role" asp-items="ViewBag.Roles" class="form￾select"></select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="AgenceId" class="form-label"></label>
+        <select asp-for="AgenceId" asp-items="ViewBag.Agences" class="form￾select">
+            <option value="">-- Sélectionner une agence --</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Créer</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

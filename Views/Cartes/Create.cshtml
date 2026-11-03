@@ -1,0 +1,87 @@
+@model AkarangaBankMvc.Web.ViewModels.CarteCreateViewModel
+
+@{
+    ViewData["Title"] = "Émettre une carte";
+}
+
+<h1>Émettre une carte bancaire</h1>
+
+<div class="alert alert-info" role="status">
+    Le numéro est généré automatiquement (16 chiffres) et la carte est
+    valable 3 ans. Seul le numéro masqué est affiché dans l'application.
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="CompteId" class="form-label"></label>
+
+                <select asp-for="CompteId" asp-items="ViewBag.Comptes"
+                        class="form-select">
+                    <option value="">-- Sélectionner un compte actif --</option>
+                </select>
+
+                <span asp-validation-for="CompteId"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="TypeCarte" class="form-label"></label>
+
+                <select asp-for="TypeCarte" class="form-select">
+                    <option value="Visa">Visa</option>
+                    <option value="MasterCard">MasterCard</option>
+                    <option value="Locale">Locale</option>
+                </select>
+
+                <span asp-validation-for="TypeCarte"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="PlafondRetrait" class="form-label"></label>
+
+                    <input asp-for="PlafondRetrait" type="number"
+                           min="1" step="0.01" class="form-control" />
+
+                    <span asp-validation-for="PlafondRetrait"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="PlafondPaiement" class="form-label"></label>
+
+                    <input asp-for="PlafondPaiement" type="number"
+                           min="1" step="0.01" class="form-control" />
+
+                    <span asp-validation-for="PlafondPaiement"
+                          class="text-danger"></span>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label asp-for="PlafondLigne" class="form-label"></label>
+
+                    <input asp-for="PlafondLigne" type="number"
+                           min="1" step="0.01" class="form-control" />
+
+                    <span asp-validation-for="PlafondLigne"
+                          class="text-danger"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Émettre la carte
+            </button>
+
+            <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

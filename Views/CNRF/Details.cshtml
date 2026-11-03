@@ -1,0 +1,116 @@
+@model AkarangaBankMvc.Web.Models.DeclarationSoupcon
+
+@{
+    ViewData["Title"] = "Détails de la DOS";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h1 class="h3 mb-0">Détails de la DOS @Model.Reference</h1>
+    <div class="d-flex gap-2">
+        <a asp-controller="DocumentsPdf" asp-action="DeclarationCnrf" asp-route-declarationId="@Model.Id" class="btn btn-outline-danger">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Télécharger DOS (PDF)
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Retour</a>
+    </div>
+</div>
+
+<div class="alert alert-warning">
+    Document pédagogique. Aucun envoi réel ni accusé réel de la CNRF.
+</div>
+
+@if (TempData["Success"] is string message)
+{
+    <div class="alert alert-success" role="alert">@message</div>
+}
+
+@if (TempData["Error"] is string erreur)
+{
+    <div class="alert alert-danger" role="alert">@erreur</div>
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Référence</dt>
+    <dd class="col-sm-9">@Model.Reference</dd>
+
+    <dt class="col-sm-3">Client</dt>
+    <dd class="col-sm-9">@Model.Client.Nom @Model.Client.Prenom</dd>
+
+    <dt class="col-sm-3">Alerte</dt>
+    <dd class="col-sm-9">
+        ID @Model.AlerteId — @Model.Alerte.TypeAlerte
+    </dd>
+
+    <dt class="col-sm-3">Statut</dt>
+    <dd class="col-sm-9">@Model.Statut</dd>
+
+    <dt class="col-sm-3">Rédacteur</dt>
+    <dd class="col-sm-9">@(Model.RedigePar?.NomComplet ?? "Non renseigné")</dd>
+
+    <dt class="col-sm-3">Création UTC</dt>
+    <dd class="col-sm-9">
+        @Model.DateCreation.ToString("dd/MM/yyyy HH:mm:ss")
+    </dd>
+
+    <dt class="col-sm-3">Transmission simulée UTC</dt>
+    <dd class="col-sm-9">
+        @(Model.DateTransmission?.ToString("dd/MM/yyyy HH:mm:ss") ?? "—")
+    </dd>
+
+    <dt class="col-sm-3">Accusé simulé UTC</dt>
+    <dd class="col-sm-9">
+        @(Model.DateAccuseReception?.ToString("dd/MM/yyyy HH:mm:ss") ?? "—")
+    </dd>
+</dl>
+
+<h2 class="h5">Contenu enregistré</h2>
+
+<pre class="border rounded p-3 bg-body-tertiary" style="white-space: pre-wrap; overflow-wrap: anywhere;">@Model.Contenu</pre>
+
+@if (!string.IsNullOrWhiteSpace(Model.ReponseCNRF))
+{
+    <h2 class="h5">Réponse simulée</h2>
+    <p>@Model.ReponseCNRF</p>
+}
+
+@if (Model.Statut == "Brouillon")
+{
+    <form asp-action="Valider" method="post" class="mb-3">
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <button type="submit" class="btn btn-primary">
+            Valider le brouillon
+        </button>
+    </form>
+}
+
+@if (Model.Statut == "Validee")
+{
+    <form asp-action="Transmettre" method="post" class="mb-3">
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <button type="submit" class="btn btn-warning">
+            Simuler la transmission — aucun envoi réel
+        </button>
+    </form>
+}
+
+@if (Model.Statut == "Transmise")
+{
+    <form asp-action="EnregistrerAccuse" method="post" class="mb-3">
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <label for="reponse" class="form-label">
+            Réponse de test pour l'accusé simulé
+        </label>
+
+        <textarea id="reponse" name="reponse" maxlength="987" rows="3" required class="form-control mb-2"></textarea>
+
+        <button type="submit" class="btn btn-outline-success">
+            Enregistrer l'accusé simulé
+        </button>
+    </form>
+}
+
+<a asp-action="Index" class="btn btn-secondary">
+    Retour aux déclarations
+</a>

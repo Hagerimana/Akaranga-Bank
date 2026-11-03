@@ -1,0 +1,67 @@
+@* Chap 5 *@
+
+@model AkarangaBankMvc.Web.ViewModels.ClientCreateViewModel
+@{
+    ViewData["Title"] = "Nouveau client";
+}
+
+<h1>Nouveau client</h1>
+
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="NumeroClient" class="form-label"></label>
+        <input asp-for="NumeroClient" class="form-control" placeholder="CLI-000001" />
+        <span asp-validation-for="NumeroClient" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Nom" class="form-label"></label>
+        <input asp-for="Nom" class="form-control" />
+        <span asp-validation-for="Nom" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Prenom" class="form-label"></label>
+        <input asp-for="Prenom" class="form-control" />
+        <span asp-validation-for="Prenom" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="DateNaissance" class="form-label"></label>
+        <input asp-for="DateNaissance" type="date" class="form-control" />
+        <span asp-validation-for="DateNaissance" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="NumeroCNI" class="form-label"></label>
+        <input asp-for="NumeroCNI" class="form-control" placeholder="03M-1234567" />
+        <span asp-validation-for="NumeroCNI" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Telephone" class="form-label"></label>
+        <input asp-for="Telephone" class="form-control" />
+        <span asp-validation-for="Telephone" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Adresse" class="form-label"></label>
+        <input asp-for="Adresse" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="AgenceId" class="form-label"></label>
+        <select asp-for="AgenceId" asp-items="ViewBag.Agences" class="form-select">
+            <option value="">-- Sélectionner une agence --</option>
+        </select>
+        <span asp-validation-for="AgenceId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-
+    primary">Enregistrer</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

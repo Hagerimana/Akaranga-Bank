@@ -1,0 +1,165 @@
+@model AkarangaBankMvc.Web.ViewModels.CompteListViewModel
+
+@{
+    ViewData["Title"] = SharedLocalizer["Nav_Comptes"].Value;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0 fw-bold">@SharedLocalizer["Nav_Comptes"]</h1>
+        <p class="text-muted mb-0">@SharedLocalizer["AppTitle"] · Core Banking</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary d-flex align-items-center gap-2">
+        <i class="bi bi-wallet-fill"></i>
+        <span>@SharedLocalizer["Common_Create"]</span>
+    </a>
+</div>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @msg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@SharedLocalizer["Common_Close"]"></button>
+    </div>
+}
+
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        @err
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="@SharedLocalizer["Common_Close"]"></button>
+    </div>
+}
+
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <input type="text" name="recherche" value="@Model.Recherche" class="form-control"
+                       placeholder="@SharedLocalizer["Common_Search"]..." />
+            </div>
+
+            <div class="col-md-2">
+                <select name="agenceId" class="form-select">
+                    <option value="">-- @SharedLocalizer["Nav_Agences"] --</option>
+                    @foreach (var a in Model.Agences)
+                    {
+                        <option value="@a.Id" selected="@(a.Id == Model.AgenceId ? "selected" : null)">
+                            @a.Code - @a.Ville
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="typeCompteId" class="form-select">
+                    <option value="">-- Type --</option>
+                    @foreach (var t in Model.TypesCompte)
+                    {
+                        <option value="@t.Id" selected="@(t.Id == Model.TypeCompteId ? "selected" : null)">
+                            @t.Code - @t.Libelle
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="statut" class="form-select">
+                    <option value="">-- @SharedLocalizer["Common_Status"] --</option>
+                    <option value="Actif" selected="@(Model.Statut == "Actif" ? "selected" : null)">Actif</option>
+                    <option value="Bloque" selected="@(Model.Statut == "Bloque" ? "selected" : null)">Bloqué</option>
+                    <option value="Cloture" selected="@(Model.Statut == "Cloture" ? "selected" : null)">Clôturé</option>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex gap-1">
+                <button type="submit" class="btn btn-primary w-100">
+                    <i class="bi bi-funnel me-1"></i> @SharedLocalizer["Common_Filter"]
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-2 text-muted small">
+    <span>@SharedLocalizer["Common_Total"] : <strong>@Model.Total</strong></span>
+</div>
+
+<div class="card border-0 shadow-sm overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>@SharedLocalizer["Common_Code"]</th>
+                    <th>@SharedLocalizer["Nav_Clients"]</th>
+                    <th>@SharedLocalizer["Nav_Agences"]</th>
+                    <th>Type</th>
+                    <th class="text-end">@SharedLocalizer["Common_Amount"]</th>
+                    <th>@SharedLocalizer["Common_Status"]</th>
+                    <th class="text-end">@SharedLocalizer["Common_Actions"]</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var compte in Model.Comptes)
+                {
+                    <tr>
+                        <td class="fw-semibold"><code>@compte.NumeroCompte</code></td>
+                        <td>
+                            @if (compte.Client is not null)
+                            {
+                                @($"{compte.Client.Nom} {compte.Client.Prenom}")
+                            }
+                            else
+                            {
+                                <span class="text-muted">Compte interne</span>
+                            }
+                        </td>
+                        <td><span class="badge bg-secondary">@compte.Agence.Code</span></td>
+                        <td>@compte.TypeCompte.Code</td>
+                        <td class="text-end fw-bold">
+                            @compte.Solde.ToString("N2") @compte.Devise
+                        </td>
+                        <td>
+                            <span class="badge @(compte.Statut == "Actif" ? "bg-success" : compte.Statut == "Bloque" ? "bg-warning text-dark" : "bg-secondary")">
+                                @compte.Statut
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <a asp-action="Details" asp-route-id="@compte.Id" class="btn btn-outline-primary" title="@SharedLocalizer["Common_Details"]">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@compte.Id" class="btn btn-outline-warning" title="@SharedLocalizer["Common_Edit"]">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@compte.Id" class="btn btn-outline-danger" title="@SharedLocalizer["Common_Delete"]">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li class="page-item @(i == Model.Page ? "active" : "")">
+                    <a class="page-link" asp-action="Index" asp-route-page="@i" asp-route-recherche="@Model.Recherche"
+                       asp-route-agenceId="@Model.AgenceId" asp-route-typeCompteId="@Model.TypeCompteId"
+                       asp-route-statut="@Model.Statut">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}

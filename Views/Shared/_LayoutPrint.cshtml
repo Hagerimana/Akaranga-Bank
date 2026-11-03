@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.Name">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - @SharedLocalizer["Common_Print"] @SharedLocalizer["AppTitle"]</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #1f2937;
+            font-size: 13px;
+        }
+
+        .print-header {
+            border-bottom: 2px solid #1F3864;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .ak-brand-print {
+            color: #1F3864;
+            font-weight: 700;
+            font-size: 22px;
+        }
+
+        .table-print th {
+            background-color: #f1f5f9 !important;
+            color: #1F3864 !important;
+            border-bottom: 2px solid #1F3864;
+        }
+
+        @@media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="no-print mb-4 d-flex justify-content-between align-items-center bg-light p-3 rounded border">
+        <div>
+            <h1 class="h6 mb-0 text-muted"><i class="bi bi-printer me-2"></i>@SharedLocalizer["Common_Print"] - @SharedLocalizer["AppTitle"]</h1>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-primary btn-sm">
+                <i class="bi bi-printer-fill me-1"></i> @SharedLocalizer["Common_Print"]
+            </button>
+            <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> @SharedLocalizer["Common_Close"]
+            </a>
+        </div>
+    </div>
+
+    <header class="print-header d-flex justify-content-between align-items-center">
+        <div>
+            <div class="ak-brand-print">@SharedLocalizer["AppTitle"]</div>
+            <div class="small text-muted">Banque Commerciale du Burundi — @SharedLocalizer["Nav_Reporting"]</div>
+        </div>
+        <div class="text-end small">
+            <div><strong>@SharedLocalizer["Common_Date"] :</strong> @DateTime.UtcNow.ToString("dd/MM/yyyy HH:mm") UTC</div>
+            <div class="text-muted">Document officiel certifié</div>
+        </div>
+    </header>
+
+    <main id="print-content">
+        @RenderBody()
+    </main>
+
+    <footer class="mt-5 pt-3 border-top text-center text-muted small">
+        @SharedLocalizer["AppTitle"] S.A. — Siège Social Boulevard Patrice Lumumba, Bujumbura — Agrément BRB n° B/2024/09
+    </footer>
+</body>
+</html>

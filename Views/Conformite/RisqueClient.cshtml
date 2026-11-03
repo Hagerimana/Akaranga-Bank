@@ -1,0 +1,79 @@
+@using AkarangaBankMvc.Web.Models
+
+@{
+    ViewData["Title"] = "Risque client";
+
+    int? clientId = ViewBag.ClientId is int identifiant
+        ? identifiant
+        : null;
+
+    NiveauRisqueClient? risque =
+        ViewBag.Risque is NiveauRisqueClient niveau
+            ? niveau
+            : null;
+
+    var libelle = risque switch
+    {
+        NiveauRisqueClient.Faible => "Faible",
+        NiveauRisqueClient.Moyen => "Moyen",
+        NiveauRisqueClient.Eleve => "Élevé",
+        NiveauRisqueClient.Inconnu => "Inconnu",
+        _ => "Non disponible"
+    };
+
+    var classeBadge = risque switch
+    {
+        NiveauRisqueClient.Faible => "bg-success",
+        NiveauRisqueClient.Moyen => "bg-warning text-dark",
+        NiveauRisqueClient.Eleve => "bg-danger",
+        _ => "bg-secondary"
+    };
+}
+
+<h1>Évaluation du risque client</h1>
+
+@if (clientId.HasValue && risque.HasValue)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-4">Identifiant du client</dt>
+                <dd class="col-sm-8">
+                    @clientId.Value
+                </dd>
+
+                <dt class="col-sm-4">Niveau de risque calculé</dt>
+                <dd class="col-sm-8">
+                    <span class="badge @classeBadge">
+                        @libelle
+                    </span>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <p class="text-muted">
+        Ce niveau provient des règles simplifiées du service
+        de conformité. Il constitue un indicateur de surveillance,
+        pas une preuve d’activité frauduleuse.
+    </p>
+
+    <a asp-controller="Clients"
+       asp-action="Details"
+       asp-route-id="@clientId.Value"
+       class="btn btn-outline-primary">
+        Voir la fiche du client
+    </a>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        Les informations d’évaluation ne sont pas disponibles.
+    </div>
+}
+
+<a asp-controller="Conformite"
+   asp-action="Alertes"
+   class="btn btn-secondary">
+    Retour aux alertes
+</a>

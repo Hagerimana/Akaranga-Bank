@@ -1,0 +1,55 @@
+@model AkarangaBankMvc.Web.ViewModels.CompteDetailsViewModel
+
+@{
+    ViewData["Title"] = "Supprimer le compte";
+}
+
+<h1>Supprimer le compte</h1>
+
+<div class="alert alert-warning">
+    Confirmez-vous la suppression de ce compte ?
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Numéro</dt>
+    <dd class="col-sm-9">@Model.Compte.NumeroCompte</dd>
+
+    <dt class="col-sm-3">Client</dt>
+    <dd class="col-sm-9">
+        @if (Model.Compte.Client is not null)
+        {
+            @($"{Model.Compte.Client.Nom} {Model.Compte.Client.Prenom}")
+        }
+        else
+        {
+            <span class="text-muted">Compte interne</span>
+        }
+    </dd>
+
+    <dt class="col-sm-3">Solde</dt>
+    <dd class="col-sm-9">
+        @Model.Compte.Solde.ToString("N2") @Model.Compte.Devise
+    </dd>
+
+    <dt class="col-sm-3">Écritures</dt>
+    <dd class="col-sm-9">@Model.Ecritures.Count()</dd>
+</dl>
+
+@if (Model.Ecritures.Any())
+{
+    <div class="alert alert-danger">
+        Ce compte a des écritures comptables. La suppression sera refusée.
+    </div>
+}
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" name="id" value="@Model.Compte.Id" />
+
+    <button type="submit" class="btn btn-danger">
+        Supprimer
+    </button>
+
+    <a asp-action="Index" class="btn btn-secondary">
+        Annuler
+    </a>
+</form>

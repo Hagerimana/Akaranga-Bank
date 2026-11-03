@@ -1,0 +1,118 @@
+﻿@page
+@using Microsoft.AspNetCore.Http.Features
+@model TwoFactorAuthenticationModel
+@{
+    ViewData["Title"] = "Double authentification (2FA)";
+    ViewData["ActivePage"] = ManageNavPages.TwoFactorAuthentication;
+}
+
+<partial name="_StatusMessage" for="StatusMessage" />
+<h3>@ViewData["Title"]</h3>
+
+<p class="text-muted">
+    La double authentification ajoute une vérification supplémentaire lors de la connexion.
+    Elle est <strong>obligatoire</strong> pour accéder aux opérations sensibles
+    (suppression de client, clôture de compte).
+</p>
+
+@{
+    var consentFeature = HttpContext.Features.Get<ITrackingConsentFeature>();
+    @if (consentFeature?.CanTrack ?? true)
+    {
+        @if (Model.Is2faEnabled)
+        {
+            <div class="alert alert-success">
+                <i class="bi bi-shield-check"></i>
+                La double authentification est <strong>activée</strong> sur votre compte.
+            </div>
+
+            if (Model.RecoveryCodesLeft == 0)
+            {
+                <div class="alert alert-danger">
+                    <strong>Vous n'avez plus de codes de secours.</strong>
+                    <p class="mb-0">
+                        Vous devez <a asp-page="./GenerateRecoveryCodes">générer un nouveau jeu de codes</a>
+                        avant de pouvoir vous connecter avec un code de secours.
+                    </p>
+                </div>
+            }
+            else if (Model.RecoveryCodesLeft == 1)
+            {
+                <div class="alert alert-danger">
+                    <strong>Il ne vous reste qu'un code de secours.</strong>
+                    <p class="mb-0">
+                        Vous pouvez <a asp-page="./GenerateRecoveryCodes">générer un nouveau jeu de codes</a>.
+                    </p>
+                </div>
+            }
+            else if (Model.RecoveryCodesLeft <= 3)
+            {
+                <div class="alert alert-warning">
+                    <strong>Il ne vous reste que @Model.RecoveryCodesLeft codes de secours.</strong>
+                    <p class="mb-0">
+                        Vous devriez <a asp-page="./GenerateRecoveryCodes">générer un nouveau jeu de codes</a>.
+                    </p>
+                </div>
+            }
+
+            if (Model.IsMachineRemembered)
+            {
+                <form method="post" class="mb-3">
+                    <button type="submit" class="btn btn-outline-secondary">
+                        Oublier cet appareil
+                    </button>
+                </form>
+            }
+
+            <div class="d-flex flex-wrap gap-2">
+                <a asp-page="./Disable2fa" class="btn btn-outline-danger">Désactiver la 2FA</a>
+                <a asp-page="./GenerateRecoveryCodes" class="btn btn-outline-primary">Régénérer les codes de secours</a>
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning">
+                <i class="bi bi-exclamation-triangle"></i>
+                La double authentification n'est pas encore activée.
+            </div>
+        }
+
+        <h4 class="h5 mt-4">Application d'authentification</h4>
+
+        @if (!Model.HasAuthenticator)
+        {
+            <p>
+                Ajoutez une application d'authentification (Microsoft Authenticator,
+                Google Authenticator, Authy…) pour activer la 2FA.
+            </p>
+
+            <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">
+                <i class="bi bi-qr-code"></i> Ajouter une application d'authentification
+            </a>
+        }
+        else
+        {
+            <div class="d-flex flex-wrap gap-2">
+                <a id="enable-authenticator" asp-page="./EnableAuthenticator" class="btn btn-primary">
+                    Configurer l'application d'authentification
+                </a>
+                <a id="reset-authenticator" asp-page="./ResetAuthenticator" class="btn btn-outline-secondary">
+                    Réinitialiser la clé d'authentification
+                </a>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <strong>La politique de confidentialité et de cookies n'a pas été acceptée.</strong>
+            <p class="mb-0">
+                Vous devez l'accepter avant de pouvoir activer la double authentification.
+            </p>
+        </div>
+    }
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

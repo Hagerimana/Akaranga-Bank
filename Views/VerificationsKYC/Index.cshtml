@@ -1,0 +1,72 @@
+@model IReadOnlyList<AkarangaBankMvc.Web.Models.VerificationKYC>
+@{
+    ViewData["Title"] = "Vérifications KYC";
+    var statutActuel = ViewBag.Statut as string;
+}
+
+<h1>Vérifications KYC</h1>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+        <label for="statut" class="visually-hidden">Statut</label>
+        <select id="statut" name="statut" class="form-select">
+            <option value="">Tous les statuts</option>
+            <option value="EnAttente" selected="@(statutActuel == "EnAttente")">En attente</option>
+            <option value="Valide" selected="@(statutActuel == "Valide")">Validé</option>
+            <option value="Rejete" selected="@(statutActuel == "Rejete")">Rejeté</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-primary">Filtrer</button>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">Aucune vérification KYC ne correspond à ce filtre.</p>
+}
+else
+{
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>Client</th>
+                <th>Document</th>
+                <th>Statut</th>
+                <th>Vérifié par</th>
+                <th>Date</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var kyc in Model)
+        {
+            var badge = kyc.Statut == "Valide" ? "bg-success"
+                : kyc.Statut == "Rejete" ? "bg-danger" : "bg-warning text-dark";
+            <tr>
+                <td>
+                    <a asp-controller="Clients" asp-action="Details" asp-route-id="@kyc.ClientId">
+                        @kyc.Client.NumeroClient - @kyc.Client.Nom @kyc.Client.Prenom
+                    </a>
+                </td>
+                <td>@kyc.TypeDocument : @kyc.NumeroDocument</td>
+                <td><span class="badge @badge">@kyc.Statut</span></td>
+                <td>@(kyc.VerifiePar?.NomComplet ?? "-")</td>
+                <td>@(kyc.DateVerification?.ToString("dd/MM/yyyy HH:mm") ?? "-")</td>
+                <td>
+                    @if (kyc.Statut == "EnAttente")
+                    {
+                        <form asp-action="Valider" asp-route-id="@kyc.Id" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-success">Valider</button>
+                        </form>
+                        <form asp-action="Rejeter" asp-route-id="@kyc.Id" method="post" class="d-inline">
+                            <input type="hidden" name="commentaire" value="Rejeté depuis le suivi KYC." />
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Rejeter</button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

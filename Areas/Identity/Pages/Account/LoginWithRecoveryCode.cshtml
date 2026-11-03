@@ -1,0 +1,36 @@
+﻿@page
+@model LoginWithRecoveryCodeModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Code de secours";
+    ViewData["Subtitle"] = "Saisissez l'un de vos codes de secours. " +
+        "Cette connexion ne sera pas mémorisée avant une prochaine validation par application d'authentification.";
+}
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger login-validation" role="alert"></div>
+
+    <div class="mb-4">
+        <label asp-for="Input.RecoveryCode" class="form-label login-label">Code de secours</label>
+
+        <input asp-for="Input.RecoveryCode" class="form-control login-input" autocomplete="off"
+               placeholder="XXXXX-XXXXX" required autofocus />
+
+        <span asp-validation-for="Input.RecoveryCode" class="text-danger small"></span>
+    </div>
+
+    <button type="submit" class="login-submit">
+        Se connecter
+        <span aria-hidden="true">→</span>
+    </button>
+
+    <p class="login-help">
+        <a asp-page="./LoginWith2fa" asp-route-returnUrl="@Model.ReturnUrl">
+            Revenir au code d'authentification
+        </a>
+    </p>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,44 @@
+# Secrets et variables locales
+.env
+.env.*
+!.env.example
+**/secrets.json
+**/appsettings.Development.json
+**/appsettings.Local.json
+
+# Certificats privés
+*.pfx
+*.p12
+*.key
+
+# Résultats de compilation .NET
+[Bb]in/
+[Oo]bj/
+artifacts/
+publish/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Autres IDE
+.idea/
+
+# Journaux
+*.log
+logs/
+
+# Tests et couverture
+TestResults/
+coverage/
+coverage.*
+*.coverage
+*.coveragexml
+
+# Fichiers du système
+.DS_Store
+Thumbs.db
+Desktop.ini

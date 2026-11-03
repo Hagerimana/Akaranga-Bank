@@ -1,0 +1,111 @@
+@model AkarangaBankMvc.Web.ViewModels.CompteResultatViewModel
+@{
+    ViewData["Title"] = "Compte de Résultat";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0">Compte de Résultat Simplifié</h1>
+        <p class="text-muted mb-0">Période du @Model.DateDebut.ToString("dd/MM/yyyy") au @Model.DateFin.ToString("dd/MM/yyyy")</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button onclick="window.print()" class="btn btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i> Imprimer
+        </button>
+    </div>
+</div>
+
+<div class="card mb-4 no-print">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-5">
+                <label for="debut" class="form-label">Date début</label>
+                <input type="date" id="debut" name="debut" value="@Model.DateDebut.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div class="col-md-5">
+                <label for="fin" class="form-label">Date fin</label>
+                <input type="date" id="fin" name="fin" value="@Model.DateFin.ToString("yyyy-MM-dd")" class="form-control" />
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-secondary w-100">Calculer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Produits d'exploitation -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100 border-top border-success border-3">
+            <div class="card-header bg-light">
+                <h2 class="h6 mb-0 text-success fw-bold"><i class="bi bi-arrow-down-left-circle me-1"></i> PRODUITS BANCAIRES (+)</h2>
+            </div>
+            <div class="card-body p-0">
+                <table class="table mb-0 align-middle">
+                    <tbody>
+                        @foreach (var (libelle, montant) in Model.Produits)
+                        {
+                            <tr>
+                                <td>@libelle</td>
+                                <td class="text-end fw-semibold text-success">@montant.ToString("N2") BIF</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light border-top border-2">
+                        <tr class="fw-bold">
+                            <td>TOTAL DES PRODUITS :</td>
+                            <td class="text-end text-success">@Model.TotalProduits.ToString("N2") BIF</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charges d'exploitation -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100 border-top border-danger border-3">
+            <div class="card-header bg-light">
+                <h2 class="h6 mb-0 text-danger fw-bold"><i class="bi bi-arrow-up-right-circle me-1"></i> CHARGES BANCAIRES (-)</h2>
+            </div>
+            <div class="card-body p-0">
+                <table class="table mb-0 align-middle">
+                    <tbody>
+                        @foreach (var (libelle, montant) in Model.Charges)
+                        {
+                            <tr>
+                                <td>@libelle</td>
+                                <td class="text-end fw-semibold text-danger">@montant.ToString("N2") BIF</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light border-top border-2">
+                        <tr class="fw-bold">
+                            <td>TOTAL DES CHARGES :</td>
+                            <td class="text-end text-danger">@Model.TotalCharges.ToString("N2") BIF</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Synthèse Résultat Net -->
+<div class="card shadow-sm mt-4 @(Model.ResultatNet >= 0 ? "border-success" : "border-danger") border-2">
+    <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h3 class="h5 mb-1">RÉSULTAT NET D'EXPLOITATION</h3>
+            <span class="text-muted small">Total Produits (@Model.TotalProduits.ToString("N2")) - Total Charges (@Model.TotalCharges.ToString("N2"))</span>
+        </div>
+        <div class="text-end">
+            <span class="fs-3 fw-bold @(Model.ResultatNet >= 0 ? "text-success" : "text-danger")">
+                @Model.ResultatNet.ToString("N2") BIF
+            </span>
+            <div class="small fw-semibold text-uppercase @(Model.ResultatNet >= 0 ? "text-success" : "text-danger")">
+                @(Model.ResultatNet >= 0 ? "Bénéfice net d'exploitation" : "Déficit d'exploitation")
+            </div>
+        </div>
+    </div>
+</div>
+

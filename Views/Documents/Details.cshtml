@@ -1,0 +1,145 @@
+@model AkarangaBankMvc.Web.ViewModels.DocumentDetailsViewModel
+@{
+    ViewData["Title"] = $"Document - {Model.Document.Titre}";
+    var doc = Model.Document;
+    var badgeClass = doc.Statut switch
+    {
+        "Actif" => "bg-success",
+        "Archive" => "bg-warning text-dark",
+        "Supprime" => "bg-danger",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0">@doc.Titre</h1>
+        <span class="badge @badgeClass fs-6">@doc.Statut</span>
+        <span class="badge bg-light text-dark border ms-2">@doc.Categorie</span>
+    </div>
+    <div class="d-flex gap-2">
+        @if (doc.Statut != "Supprime")
+        {
+            <a asp-action="Telecharger" asp-route-id="@doc.Id" class="btn btn-primary">
+                <i class="bi bi-download" aria-hidden="true"></i> Télécharger
+            </a>
+            @if (doc.Statut == "Actif")
+            {
+                <form asp-action="Archiver" asp-route-id="@doc.Id" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-warning">
+                        <i class="bi bi-archive" aria-hidden="true"></i> Archiver
+                    </button>
+                </form>
+            }
+            <form asp-action="Supprimer" asp-route-id="@doc.Id" method="post" class="d-inline" onsubmit="return confirm('Confirmer la suppression logique de ce document ?');">
+                <button type="submit" class="btn btn-outline-danger">
+                    <i class="bi bi-trash" aria-hidden="true"></i> Supprimer
+                </button>
+            </form>
+        }
+        <a asp-action="Index" class="btn btn-outline-secondary">Retour à la liste</a>
+    </div>
+</div>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        @msg
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+    </div>
+}
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light">
+                <h2 class="h6 mb-0">Métadonnées du document</h2>
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Fichier d'origine</dt>
+                    <dd class="col-sm-7 text-break">@doc.NomFichierOriginal</dd>
+
+                    <dt class="col-sm-5">Type MIME</dt>
+                    <dd class="col-sm-7"><code>@doc.ContentType</code></dd>
+
+                    <dt class="col-sm-5">Taille</dt>
+                    <dd class="col-sm-7">@((doc.TailleOctets / 1024.0).ToString("N1")) Ko (@doc.TailleOctets octets)</dd>
+
+                    <dt class="col-sm-5">Empreinte SHA-256</dt>
+                    <dd class="col-sm-7"><code class="small text-break">@doc.Sha256Hash</code></dd>
+
+                    <dt class="col-sm-5">Date téléversement</dt>
+                    <dd class="col-sm-7">@doc.DateCreation.ToString("dd/MM/yyyy HH:mm:ss") UTC</dd>
+
+                    <dt class="col-sm-5">Téléversé par</dt>
+                    <dd class="col-sm-7">@(doc.CreeParUtilisateur?.NomComplet ?? "Système")</dd>
+
+                    <dt class="col-sm-5">Client associé</dt>
+                    <dd class="col-sm-7">
+                        @if (doc.Client is not null)
+                        {
+                            <a asp-controller="Clients" asp-action="Details" asp-route-id="@doc.ClientId">
+                                @doc.Client.Nom @doc.Client.Prenom (@doc.Client.NumeroClient)
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="text-muted">Aucun client</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h2 class="h6 mb-0">Piste d'audit des accès (LBC/FT)</h2>
+                <span class="badge bg-secondary">@Model.HistoriqueAcces.Count() événement(s)</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover mb-0" role="table" aria-label="Historique des accès">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Date (UTC)</th>
+                                <th scope="col">Action</th>
+                                <th scope="col">Utilisateur</th>
+                                <th scope="col">Adresse IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (!Model.HistoriqueAcces.Any())
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center py-3 text-muted">Aucun accès enregistré.</td>
+                                </tr>
+                            }
+                            @foreach (var acces in Model.HistoriqueAcces)
+                            {
+                                var actionBadge = acces.TypeAcces switch
+                                {
+                                    "Creation" => "bg-primary",
+                                    "Telechargement" => "bg-success",
+                                    "Consultation" => "bg-info text-dark",
+                                    "Archivage" => "bg-warning text-dark",
+                                    "Suppression" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+                                <tr>
+                                    <td class="small">@acces.DateAcces.ToString("dd/MM/yyyy HH:mm:ss")</td>
+                                    <td><span class="badge @actionBadge">@acces.TypeAcces</span></td>
+                                    <td>@(acces.Utilisateur?.NomComplet ?? "Anonyme")</td>
+                                    <td><code class="small">@(acces.AdresseIp ?? "—")</code></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

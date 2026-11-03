@@ -1,0 +1,76 @@
+@page
+@model EmailModel
+@{
+    ViewData["Title"] = "Adresse email";
+    ViewData["ActivePage"] = ManageNavPages.Email;
+}
+
+<h3>@ViewData["Title"]</h3>
+
+<partial name="_StatusMessage" for="StatusMessage" />
+
+<div class="mb-4">
+    <div class="d-flex flex-wrap align-items-center gap-2">
+        <span class="text-muted">Adresse actuelle :</span>
+        <strong>@Model.Email</strong>
+
+        @if (Model.EmailConfirme)
+        {
+            <span class="badge bg-success">Confirmée</span>
+        }
+        else
+        {
+            <span class="badge bg-warning text-dark">Non confirmée</span>
+        }
+    </div>
+
+    @if (!Model.EmailConfirme)
+    {
+        <div class="alert alert-warning mt-3 mb-0">
+            Votre adresse email n'est pas encore confirmée. Consultez votre boîte de réception
+            et cliquez sur le lien envoyé, ou demandez un nouveau lien.
+        </div>
+    }
+</div>
+
+@if (!Model.EmailConfirme)
+{
+    <form method="post" asp-page-handler="RenvoyerVerification" class="mb-4">
+        <button type="submit" class="btn btn-outline-primary">
+            <i class="bi bi-envelope-arrow-up"></i> Renvoyer le lien de vérification
+        </button>
+    </form>
+}
+
+<hr />
+
+<h4 class="h5">Changer d'adresse email</h4>
+
+<p class="text-muted">
+    Un lien de confirmation sera envoyé à la nouvelle adresse. Après le changement,
+    vous serez déconnecté et devrez vous reconnecter depuis le lien reçu.
+</p>
+
+<form method="post" asp-page-handler="ChangerEmail">
+    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+    <div class="form-floating mb-3">
+        <input asp-for="Input.NouvelEmail" class="form-control" autocomplete="email"
+               placeholder="nouvelle@akaranga.bi" />
+        <label asp-for="Input.NouvelEmail">Nouvelle adresse email</label>
+        <span asp-validation-for="Input.NouvelEmail" class="text-danger"></span>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input asp-for="Input.ConfirmationEmail" class="form-control" autocomplete="email"
+               placeholder="nouvelle@akaranga.bi" />
+        <label asp-for="Input.ConfirmationEmail">Confirmer la nouvelle adresse</label>
+        <span asp-validation-for="Input.ConfirmationEmail" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enregistrer et envoyer le lien</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

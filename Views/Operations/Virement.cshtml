@@ -1,0 +1,77 @@
+@model AkarangaBankMvc.Web.ViewModels.VirementViewModel
+
+@{
+    ViewData["Title"] = "Virement";
+}
+
+<h1>Virement</h1>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success">
+        @msg
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Virement" method="post">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="CompteSourceId" class="form-label">
+                    Compte source
+                </label>
+
+                <select asp-for="CompteSourceId" asp-items="ViewBag.Comptes" class="form-select">
+                    <option value="">-- Sélectionner --</option>
+                </select>
+
+                <span asp-validation-for="CompteSourceId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="CompteDestinationId" class="form-label">
+                    Compte destination
+                </label>
+
+                <select asp-for="CompteDestinationId" asp-items="ViewBag.ComptesDestination" class="form-select">
+                    <option value="">-- Sélectionner --</option>
+                </select>
+
+                <span asp-validation-for="CompteDestinationId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Montant" class="form-label">
+                    Montant (BIF)
+                </label>
+
+                <input asp-for="Montant" class="form-control" type="number" step="0.01" />
+
+                <span asp-validation-for="Montant" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Motif" class="form-label">
+                    Motif
+                </label>
+
+                <input asp-for="Motif" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Enregistrer le virement
+            </button>
+
+            <a asp-action="Journal" class="btn btn-secondary">
+                Annuler
+            </a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

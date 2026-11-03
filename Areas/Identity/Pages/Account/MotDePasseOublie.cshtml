@@ -1,0 +1,34 @@
+@page
+@model MotDePasseOublieModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Mot de passe oublié";
+    ViewData["Subtitle"] = "Saisissez l'adresse email associée à votre compte. " +
+        "Nous vous enverrons un code de vérification à 6 chiffres.";
+}
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger login-validation" role="alert"></div>
+
+    <div class="mb-4">
+        <label asp-for="Input.Email" class="form-label login-label">Adresse e-mail</label>
+
+        <input asp-for="Input.Email" type="email" class="form-control login-input"
+               autocomplete="username" placeholder="nom@akaranga.bi" required autofocus />
+
+        <span asp-validation-for="Input.Email" class="text-danger small"></span>
+    </div>
+
+    <button type="submit" class="login-submit">
+        Recevoir le code
+        <span aria-hidden="true">→</span>
+    </button>
+
+    <p class="login-help">
+        <a asp-page="./Login">Revenir à la page de connexion</a>
+    </p>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

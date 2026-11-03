@@ -1,0 +1,95 @@
+@page
+@model ProfilModel
+@{
+    ViewData["Title"] = "Mes informations personnelles";
+    ViewData["ActivePage"] = ManageNavPages.Profil;
+}
+
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-4">
+    <div>
+        <h3 class="mb-1">@ViewData["Title"]</h3>
+        <p class="text-muted mb-0">
+            Consultez les données associées à votre compte et téléchargez-les au format PDF.
+        </p>
+    </div>
+
+    <a asp-page-handler="TelechargerPdf" class="btn btn-primary">
+        <i class="bi bi-file-earmark-pdf"></i> Télécharger en PDF
+    </a>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-6">
+        <div class="border rounded-3 p-3 h-100">
+            <h4 class="h6 text-uppercase text-muted mb-3">Identité</h4>
+
+            <dl class="row mb-0">
+                <dt class="col-sm-5">Nom complet</dt>
+                <dd class="col-sm-7">@Model.NomComplet</dd>
+
+                <dt class="col-sm-5">Adresse email</dt>
+                <dd class="col-sm-7">
+                    @Model.Email
+                    @if (Model.EmailConfirme)
+                    {
+                        <span class="badge bg-success ms-1">Vérifiée</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-warning text-dark ms-1">Non vérifiée</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-5">Téléphone</dt>
+                <dd class="col-sm-7">@(string.IsNullOrWhiteSpace(Model.Telephone) ? "—" : Model.Telephone)</dd>
+
+                <dt class="col-sm-5">Client lié</dt>
+                <dd class="col-sm-7">@(Model.ClientLie ?? "—")</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="border rounded-3 p-3 h-100">
+            <h4 class="h6 text-uppercase text-muted mb-3">Compte</h4>
+
+            <dl class="row mb-0">
+                <dt class="col-sm-5">Rôle métier</dt>
+                <dd class="col-sm-7">@Model.RoleMetier</dd>
+
+                <dt class="col-sm-5">Rôles applicatifs</dt>
+                <dd class="col-sm-7">@Model.RolesIdentity</dd>
+
+                <dt class="col-sm-5">Agence</dt>
+                <dd class="col-sm-7">@Model.Agence</dd>
+
+                <dt class="col-sm-5">Compte créé le</dt>
+                <dd class="col-sm-7">@Model.DateCreation.ToString("dd/MM/yyyy HH:mm")</dd>
+
+                <dt class="col-sm-5">Dernière connexion</dt>
+                <dd class="col-sm-7">
+                    @(Model.DerniereConnexion is null
+                        ? "—"
+                        : Model.DerniereConnexion.Value.ToString("dd/MM/yyyy HH:mm"))
+                </dd>
+
+                <dt class="col-sm-5">Double authentification</dt>
+                <dd class="col-sm-7">
+                    @if (Model.DeuxFacteurs)
+                    {
+                        <span class="badge bg-success">Activée</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Désactivée</span>
+                    }
+                </dd>
+            </dl>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-info mt-4 mb-0">
+    <i class="bi bi-info-circle"></i>
+    Le PDF reprend ces informations à la date de génération. Il est strictement personnel.
+</div>

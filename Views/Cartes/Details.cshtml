@@ -1,0 +1,243 @@
+@model AkarangaBankMvc.Web.ViewModels.CarteDetailsViewModel
+
+@{
+    ViewData["Title"] = "Détails de la carte";
+    var carte = Model.Carte;
+
+    var couleur = carte.Statut switch
+    {
+        "Active" => "bg-success",
+        "Bloquee" => "bg-warning text-dark",
+        "Expiree" => "bg-secondary",
+        "Perdue" => "bg-danger",
+        "Volee" => "bg-danger",
+        "Opposition" => "bg-dark",
+        _ => "bg-secondary"
+    };
+}
+
+<h1>Carte @carte.NumeroMasque</h1>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success" role="alert">@msg</div>
+}
+
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger" role="alert">@err</div>
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Statut</dt>
+    <dd class="col-sm-9">
+        <span class="badge @couleur">@carte.Statut</span>
+        @if (!string.IsNullOrWhiteSpace(carte.MotifBlocage))
+        {
+            <span class="text-muted">— motif : @carte.MotifBlocage</span>
+        }
+    </dd>
+
+    <dt class="col-sm-3">Numéro masqué</dt>
+    <dd class="col-sm-9"><code>@carte.NumeroMasque</code></dd>
+
+    <dt class="col-sm-3">Type</dt>
+    <dd class="col-sm-9">@carte.TypeCarte</dd>
+
+    <dt class="col-sm-3">Client</dt>
+    <dd class="col-sm-9">
+        <a asp-controller="Clients" asp-action="Details"
+           asp-route-id="@carte.ClientId">
+            @carte.Client.Nom @carte.Client.Prenom
+        </a>
+        <span class="text-muted">(@carte.Client.NumeroClient)</span>
+    </dd>
+
+    <dt class="col-sm-3">Compte associé</dt>
+    <dd class="col-sm-9">
+        <a asp-controller="Comptes" asp-action="Details"
+           asp-route-id="@carte.CompteId">
+            @carte.Compte.NumeroCompte
+        </a>
+        <span class="text-muted">
+            — solde @carte.Compte.Solde.ToString("N2")
+            @carte.Compte.Devise
+        </span>
+    </dd>
+
+    <dt class="col-sm-3">Expiration</dt>
+    <dd class="col-sm-9">@carte.DateExpiration.ToString("dd/MM/yyyy")</dd>
+
+    <dt class="col-sm-3">Plafonds journaliers</dt>
+    <dd class="col-sm-9">
+        Retrait : @carte.PlafondRetrait.ToString("N2") BIF —
+        Paiement : @carte.PlafondPaiement.ToString("N2") BIF —
+        En ligne : @carte.PlafondLigne.ToString("N2") BIF
+    </dd>
+
+    <dt class="col-sm-3">Création</dt>
+    <dd class="col-sm-9">@carte.DateCreation.ToString("dd/MM/yyyy HH:mm")</dd>
+</dl>
+
+@if (User.IsInRole("admin"))
+{
+    <div class="card mb-4">
+        <div class="card-header">Gestion de la carte</div>
+
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h2 class="h6">Bloquer / opposition</h2>
+
+                    <form asp-action="Bloquer" asp-route-id="@carte.Id"
+                          method="post">
+                        <div class="mb-2">
+                            <label for="motif" class="form-label">
+                                Motif
+                            </label>
+
+                            <select id="motif" name="motif"
+                                    class="form-select">
+                                <option value="Perte">Perte</option>
+                                <option value="Vol">Vol</option>
+                                <option value="Fraude">Fraude</option>
+                                <option value="Autre">Autre</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger">
+                            Bloquer la carte
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-md-6">
+                    <h2 class="h6">Renouvellement</h2>
+
+                    <p class="text-muted">
+                        L'ancienne carte passe à Expiree et une nouvelle
+                        carte est créée avec les mêmes plafonds.
+                    </p>
+
+                    <form asp-action="Renouveler" asp-route-id="@carte.Id"
+                          method="post">
+                        <button type="submit" class="btn btn-outline-primary">
+                            Renouveler la carte
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (carte.Statut == "Active" &&
+     (User.IsInRole("admin") || User.IsInRole("gestionnaire") ||
+      User.IsInRole("guichetier")))
+{
+    <div class="card mb-4">
+        <div class="card-header">Autoriser une transaction</div>
+
+        <div class="card-body">
+            <form asp-action="Transaction" method="post" class="row g-2">
+                <input type="hidden" name="CarteId" value="@carte.Id" />
+
+                <div class="col-md-3">
+                    <label for="TypeTransaction" class="form-label">
+                        Type
+                    </label>
+
+                    <select id="TypeTransaction" name="TypeTransaction"
+                            class="form-select">
+                        <option value="Retrait">Retrait</option>
+                        <option value="Paiement">Paiement</option>
+                        <option value="EnLigne">Paiement en ligne</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="Montant" class="form-label">Montant (BIF)</label>
+
+                    <input type="number" id="Montant" name="Montant"
+                           min="1" step="0.01" class="form-control"
+                           required />
+                </div>
+
+                <div class="col-md-4">
+                    <label for="Commercant" class="form-label">
+                        Commerçant / guichet
+                    </label>
+
+                    <input type="text" id="Commercant" name="Commercant"
+                           maxlength="100" class="form-control" />
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        Autoriser
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+
+<h2>Historique des transactions</h2>
+
+@if (!Model.Transactions.Any())
+{
+    <p class="text-muted">Aucune transaction enregistrée.</p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm table-striped align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Référence</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Commerçant</th>
+                    <th scope="col" class="text-end">Montant</th>
+                    <th scope="col">Statut</th>
+                    <th scope="col">Motif de refus</th>
+                    <th scope="col">Opération</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var transaction in Model.Transactions)
+                {
+                    <tr>
+                        <td>
+                            @transaction.DateTransaction
+                                .ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                        <td><small>@transaction.Reference</small></td>
+                        <td>@transaction.TypeTransaction</td>
+                        <td>@transaction.Commercant</td>
+                        <td class="text-end">
+                            @transaction.Montant.ToString("N2") BIF
+                        </td>
+                        <td>
+                            <span class="badge
+                                @(transaction.Statut == "Autorisee"
+                                    ? "bg-success" : "bg-danger")">
+                                @transaction.Statut
+                            </span>
+                        </td>
+                        <td>@transaction.MotifRefus</td>
+                        <td>
+                            @if (transaction.Operation is not null)
+                            {
+                                <small>@transaction.Operation.Reference</small>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>

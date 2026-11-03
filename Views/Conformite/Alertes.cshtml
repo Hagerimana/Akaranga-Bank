@@ -1,0 +1,61 @@
+@model IEnumerable<AkarangaBankMvc.Web.Models.AlerteAML>
+
+@{
+    ViewData["Title"] = "Alertes AML";
+}
+
+<h1>Alertes AML</h1>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success">
+        @msg
+    </div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Niveau</th>
+            <th>Statut</th>
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var a in Model)
+        {
+            <tr>
+                <td>
+                    @a.DateAlerte.ToString("dd/MM/yyyy HH:mm")
+                </td>
+
+                <td>
+                    @a.Client.Nom @a.Client.Prenom
+                </td>
+
+                <td>@a.TypeAlerte</td>
+
+                <td>
+                    <span class="badge
+                        @(a.Niveau == "Critique" ? "bg-danger" :
+  a.Niveau == "Eleve" ? "bg-warning text-dark" :
+  "bg-info text-dark")">
+                        @a.Niveau
+                    </span>
+                </td>
+
+                <td>@a.Statut</td>
+
+                <td>
+                    <a asp-controller="Conformite" asp-action="Details" asp-route-id="@a.Id" class="btn btn-sm btn-primary">
+                        Détails
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

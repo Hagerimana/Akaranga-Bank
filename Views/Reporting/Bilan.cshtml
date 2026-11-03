@@ -1,0 +1,86 @@
+@model AkarangaBankMvc.Web.ViewModels.BilanViewModel
+@{
+    ViewData["Title"] = "Bilan Bancaire";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+        <h1 class="h3 mb-0">Bilan Bancaire Simplifié</h1>
+        <p class="text-muted mb-0">Situation patrimoniale arrêtée au @Model.DateArrete.ToString("dd/MM/yyyy HH:mm") UTC</p>
+    </div>
+    <div class="d-flex gap-2">
+        <button onclick="window.print()" class="btn btn-outline-secondary">
+            <i class="bi bi-printer me-1"></i> Imprimer
+        </button>
+    </div>
+</div>
+
+<div class="alert @(Model.EstEquilibre ? "alert-success" : "alert-danger") d-flex justify-content-between align-items-center mb-4" role="alert">
+    <div>
+        <i class="bi @(Model.EstEquilibre ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") fs-4 me-2"></i>
+        <strong>Équilibre Fondamental du Bilan :</strong>
+        @(Model.EstEquilibre ? "Total Actif = Total Passif & Capitaux Propres." : "Déséquilibre détecté.")
+    </div>
+    <span class="badge @(Model.EstEquilibre ? "bg-success" : "bg-danger") fs-6">
+        @(Model.EstEquilibre ? "Bilan Équilibré" : "Anomalie")
+    </span>
+</div>
+
+<div class="row g-4">
+    <!-- ACTIF -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100 border-top border-primary border-3">
+            <div class="card-header bg-light">
+                <h2 class="h6 mb-0 text-primary fw-bold"><i class="bi bi-building me-1"></i> ACTIF (EMPLOIS)</h2>
+            </div>
+            <div class="card-body p-0">
+                <table class="table mb-0 align-middle">
+                    <tbody>
+                        @foreach (var (poste, montant) in Model.PostesActif)
+                        {
+                            <tr>
+                                <td>@poste</td>
+                                <td class="text-end fw-semibold">@montant.ToString("N2") BIF</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light border-top border-2">
+                        <tr class="fw-bold">
+                            <td>TOTAL DE L'ACTIF :</td>
+                            <td class="text-end text-primary fs-6">@Model.TotalActif.ToString("N2") BIF</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- PASSIF -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100 border-top border-info border-3">
+            <div class="card-header bg-light">
+                <h2 class="h6 mb-0 text-info fw-bold"><i class="bi bi-safe me-1"></i> PASSIF & CAPITAUX PROPRES (RESSOURCES)</h2>
+            </div>
+            <div class="card-body p-0">
+                <table class="table mb-0 align-middle">
+                    <tbody>
+                        @foreach (var (poste, montant) in Model.PostesPassif)
+                        {
+                            <tr>
+                                <td>@poste</td>
+                                <td class="text-end fw-semibold">@montant.ToString("N2") BIF</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light border-top border-2">
+                        <tr class="fw-bold">
+                            <td>TOTAL DU PASSIF :</td>
+                            <td class="text-end text-info fs-6">@Model.TotalPassif.ToString("N2") BIF</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

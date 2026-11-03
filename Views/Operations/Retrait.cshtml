@@ -1,0 +1,65 @@
+@model AkarangaBankMvc.Web.ViewModels.RetraitViewModel
+
+@{
+    ViewData["Title"] = "Retrait";
+}
+
+<h1>Retrait</h1>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success">
+        @msg
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="Retrait" method="post">
+
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="CompteId" class="form-label">
+                    Compte
+                </label>
+
+                <select asp-for="CompteId" asp-items="ViewBag.Comptes" class="form-select">
+                    <option value="">-- Sélectionner --</option>
+                </select>
+
+                <span asp-validation-for="CompteId" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Montant" class="form-label">
+                    Montant (BIF)
+                </label>
+
+                <input asp-for="Montant" class="form-control" type="number" step="0.01" />
+
+                <span asp-validation-for="Montant" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Commentaire" class="form-label">
+                    Commentaire
+                </label>
+
+                <textarea asp-for="Commentaire" class="form-control" rows="2"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Enregistrer le retrait
+            </button>
+
+            <a asp-action="Journal" class="btn btn-secondary">
+                Annuler
+            </a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

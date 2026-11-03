@@ -1,0 +1,117 @@
+@{
+    Layout = null;
+    var titre = ViewData["Title"] as string ?? SharedLocalizer["AppTitle"].Value;
+    var sousTitre = ViewData["Subtitle"] as string
+        ?? SharedLocalizer["Auth_LoginSubtitle"].Value;
+}
+<!DOCTYPE html>
+<html lang="@System.Globalization.CultureInfo.CurrentUICulture.Name" data-theme="light">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+
+    <title>@titre — @SharedLocalizer["AppTitle"]</title>
+
+    <script>
+        (() => {
+            let theme = window.matchMedia("(prefers-color-scheme: dark)")
+                .matches ? "dark" : "light";
+
+            try {
+                const saved = localStorage.getItem("ak-theme");
+
+                if (saved === "dark" || saved === "light") {
+                    theme = saved;
+                }
+            } catch {
+                // Le thème reste utilisable sans stockage local.
+            }
+
+            document.documentElement.dataset.theme = theme;
+        })();
+    </script>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+
+<body>
+    <div class="login-page">
+        <header class="login-topbar d-flex justify-content-between align-items-center">
+            <a class="login-brand text-decoration-none" asp-area="" asp-controller="Home" asp-action="Index">
+                <span class="login-logo" aria-hidden="true">AB</span>
+
+                <span>
+                    <span class="login-brand-name">@SharedLocalizer["AppTitle"]</span>
+                    <span class="login-brand-caption">
+                        @SharedLocalizer["Auth_PortalCaption"]
+                    </span>
+                </span>
+            </a>
+
+            <div class="d-flex align-items-center gap-2">
+                <partial name="_LanguageSelector" />
+
+                <button id="login-theme-toggle" type="button" class="login-theme-button" aria-label="@SharedLocalizer["A11y_ToggleTheme"]">
+                    @SharedLocalizer["A11y_ToggleTheme"]
+                </button>
+            </div>
+        </header>
+
+        <main class="login-main">
+            <section class="login-card" aria-labelledby="auth-title">
+                <div class="login-card-heading">
+                    <span class="login-card-label">
+                        @SharedLocalizer["Auth_SecureSpace"]
+                    </span>
+
+                    <h1 id="auth-title">@titre</h1>
+
+                    <p>@sousTitre</p>
+                </div>
+
+                @RenderBody()
+
+                <div class="login-card-footer">
+                    @SharedLocalizer["Auth_NeverShareCode"]
+                </div>
+            </section>
+        </main>
+
+        <footer class="login-footer">
+            © @DateTime.UtcNow.Year @SharedLocalizer["AppTitle"]
+            <span aria-hidden="true">·</span>
+            @SharedLocalizer["Auth_ReservedSpace"]
+        </footer>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/js/login.js" asp-append-version="true"></script>
+
+    <script>
+        document.querySelectorAll("[data-toggle-password]").forEach((button) => {
+            button.addEventListener("click", () => {
+                const input = document.getElementById(button.dataset.togglePassword);
+
+                if (!input) return;
+
+                const show = input.type === "password";
+                input.type = show ? "text" : "password";
+
+                button.textContent = show ? "@SharedLocalizer["Auth_Hide"]" : "@SharedLocalizer["Auth_Show"]";
+                button.setAttribute("aria-pressed", String(show));
+            });
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

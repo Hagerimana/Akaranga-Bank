@@ -1,0 +1,79 @@
+@model AkarangaBankMvc.Web.ViewModels.NotificationDetailsViewModel
+@{
+    ViewData["Title"] = $"Notification #{Model.Notification.Id}";
+    var n = Model.Notification;
+    var statutBadge = n.Statut switch
+    {
+        "Envoye" => "bg-success",
+        "EnAttente" => "bg-warning text-dark",
+        "Echec" => "bg-danger",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-0">Notification #@n.Id</h1>
+        <span class="badge @statutBadge fs-6">@n.Statut</span>
+        <span class="badge bg-light text-dark border ms-2">@n.Canal</span>
+    </div>
+    <a asp-action="Index" class="btn btn-outline-secondary">Retour à la liste</a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h2 class="h6 mb-0">Contenu du message</h2>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@n.Titre</h5>
+                <hr />
+                <div class="p-3 bg-light rounded border">
+                    <pre class="m-0 text-wrap font-monospace">@n.Message</pre>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(n.DerniereErreur))
+        {
+            <div class="alert alert-danger" role="alert">
+                <h3 class="h6 alert-heading"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> Dernière erreur rencontrée</h3>
+                <p class="mb-0 font-monospace small">@n.DerniereErreur</p>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h2 class="h6 mb-0">Détails de transmission</h2>
+            </div>
+            <div class="card-body">
+                <dl class="mb-0">
+                    <dt>Canal</dt>
+                    <dd>@n.Canal</dd>
+
+                    <dt>Destinataire email</dt>
+                    <dd>@(n.DestinataireEmail ?? "—")</dd>
+
+                    <dt>Destinataire téléphone</dt>
+                    <dd>@(n.DestinataireTelephone ?? "—")</dd>
+
+                    <dt>Utilisateur ID</dt>
+                    <dd>@(n.Destinataire?.NomComplet ?? n.DestinataireId?.ToString() ?? "—")</dd>
+
+                    <dt>Nombre de tentatives</dt>
+                    <dd>@n.NombreTentatives</dd>
+
+                    <dt>Date de création</dt>
+                    <dd>@n.DateCreation.ToString("dd/MM/yyyy HH:mm:ss") UTC</dd>
+
+                    <dt>Date d'envoi effectif</dt>
+                    <dd>@(n.DateEnvoi?.ToString("dd/MM/yyyy HH:mm:ss") ?? "Non envoyé")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+

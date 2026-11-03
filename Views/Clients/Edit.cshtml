@@ -1,0 +1,83 @@
+@* Chap 5 *@
+@model AkarangaBank.Web.ViewModels.ClientEditViewModel
+@{
+    ViewData["Title"] = "Modifier le client";
+}
+
+<h1>Modifier le client</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="NumeroClient" class="form-label"></label>
+        <input asp-for="NumeroClient" class="form-control" />
+        <span asp-validation-for="NumeroClient" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Nom" class="form-label"></label>
+        <input asp-for="Nom" class="form-control" />
+        <span asp-validation-for="Nom" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Prenom" class="form-label"></label>
+        <input asp-for="Prenom" class="form-control" />
+        <span asp-validation-for="Prenom" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DateNaissance" class="form-label"></label>
+        <input asp-for="DateNaissance" type="date" class="form-control" />
+        <span asp-validation-for="DateNaissance" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="NumeroCNI" class="form-label"></label>
+        <input asp-for="NumeroCNI" class="form-control" />
+        <span asp-validation-for="NumeroCNI" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Telephone" class="form-label"></label>
+        <input asp-for="Telephone" class="form-control" />
+        <span asp-validation-for="Telephone" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Adresse" class="form-label"></label>
+        <input asp-for="Adresse" class="form-control" />
+        <span asp-validation-for="Adresse" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="AgenceId" class="form-label"></label>
+        <select asp-for="AgenceId" asp-items="ViewBag.Agences" class="form-select"></select>
+        <span asp-validation-for="AgenceId" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Statut" class="form-label"></label>
+        <select asp-for="Statut" class="form-select">
+            <option value="Actif">Actif</option>
+            <option value="Suspendu">Suspendu</option>
+            <option value="Cloture">Clôturé</option>
+        </select>
+        <span asp-validation-for="Statut" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Enregistrer</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

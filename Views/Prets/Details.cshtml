@@ -1,0 +1,314 @@
+@model AkarangaBankMvc.Web.ViewModels.PretDetailsViewModel
+
+@{
+    ViewData["Title"] = "Détails du prêt";
+    var pret = Model.Pret;
+
+    var couleur = pret.Statut switch
+    {
+        "EnAttente" => "bg-warning text-dark",
+        "Valide" => "bg-info text-dark",
+        "EnCours" => "bg-primary",
+        "Solde" => "bg-success",
+        "Rejete" => "bg-danger",
+        "Impaye" => "bg-dark",
+        _ => "bg-secondary"
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <h1 class="h3 mb-0">Prêt @pret.Reference</h1>
+    <div class="d-flex gap-2">
+        <a asp-controller="DocumentsPdf" asp-action="ContratPret" asp-route-pretId="@pret.Id" class="btn btn-outline-primary">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Contrat PDF
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">Retour</a>
+    </div>
+</div>
+
+@if (TempData["Success"] is string msg)
+{
+    <div class="alert alert-success" role="alert">@msg</div>
+}
+
+@if (TempData["Error"] is string err)
+{
+    <div class="alert alert-danger" role="alert">@err</div>
+}
+
+<dl class="row">
+    <dt class="col-sm-3">Statut</dt>
+    <dd class="col-sm-9">
+        <span class="badge @couleur">@pret.Statut</span>
+    </dd>
+
+    <dt class="col-sm-3">Client</dt>
+    <dd class="col-sm-9">
+        <a asp-controller="Clients" asp-action="Details"
+           asp-route-id="@pret.ClientId">
+            @pret.Client.Nom @pret.Client.Prenom
+        </a>
+        <span class="text-muted">(@pret.Client.NumeroClient)</span>
+    </dd>
+
+    <dt class="col-sm-3">Compte de débit</dt>
+    <dd class="col-sm-9">
+        <a asp-controller="Comptes" asp-action="Details"
+           asp-route-id="@pret.CompteDebitId">
+            @pret.CompteDebit.NumeroCompte
+        </a>
+    </dd>
+
+    <dt class="col-sm-3">Type de prêt</dt>
+    <dd class="col-sm-9">@pret.TypePret.Libelle</dd>
+
+    <dt class="col-sm-3">Montant principal</dt>
+    <dd class="col-sm-9">
+        <strong>@pret.MontantPrincipal.ToString("N2") BIF</strong>
+    </dd>
+
+    <dt class="col-sm-3">Taux d'intérêt</dt>
+    <dd class="col-sm-9">@pret.TauxInteret.ToString("N2") % / an</dd>
+
+    <dt class="col-sm-3">Durée</dt>
+    <dd class="col-sm-9">@pret.DureeMois mois</dd>
+
+    <dt class="col-sm-3">Mensualité</dt>
+    <dd class="col-sm-9">
+        <strong>@pret.Mensualite.ToString("N2") BIF</strong>
+    </dd>
+
+    <dt class="col-sm-3">Montant remboursé</dt>
+    <dd class="col-sm-9">
+        @pret.MontantRembourse.ToString("N2") BIF
+    </dd>
+
+    <dt class="col-sm-3">Solde restant</dt>
+    <dd class="col-sm-9">
+        @pret.SoldeRestant.ToString("N2") BIF
+    </dd>
+
+    <dt class="col-sm-3">Date de demande</dt>
+    <dd class="col-sm-9">@pret.DateDemande.ToString("dd/MM/yyyy HH:mm")</dd>
+
+    @if (pret.DateValidation.HasValue)
+    {
+        <dt class="col-sm-3">Date de validation</dt>
+        <dd class="col-sm-9">
+            @pret.DateValidation.Value.ToString("dd/MM/yyyy HH:mm")
+            @if (pret.ValidePar is not null)
+            {
+                <span class="text-muted">
+                    par @pret.ValidePar.NomComplet
+                </span>
+            }
+        </dd>
+    }
+
+    @if (pret.DateDebut.HasValue)
+    {
+        <dt class="col-sm-3">Début / fin</dt>
+        <dd class="col-sm-9">
+            @pret.DateDebut.Value.ToString("dd/MM/yyyy")
+            @if (pret.DateFin.HasValue)
+            {
+                <span> → @pret.DateFin.Value.ToString("dd/MM/yyyy")</span>
+            }
+        </dd>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(pret.Commentaire))
+    {
+        <dt class="col-sm-3">Commentaire</dt>
+        <dd class="col-sm-9">@pret.Commentaire</dd>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(pret.MotifRejet))
+    {
+        <dt class="col-sm-3">Motif de rejet</dt>
+        <dd class="col-sm-9 text-danger">@pret.MotifRejet</dd>
+    }
+</dl>
+
+@if (User.IsInRole("admin") && pret.Statut == "EnAttente")
+{
+    <div class="card mb-4">
+        <div class="card-header">Décision d'octroi</div>
+
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h2 class="h6">Valider le prêt</h2>
+
+                    <form asp-action="Valider" asp-route-id="@pret.Id"
+                          method="post">
+                        <div class="mb-2">
+                            <label for="tauxInteret" class="form-label">
+                                Taux d'intérêt personnalisé (%)
+                            </label>
+
+                            <input type="number" id="tauxInteret"
+                                   name="tauxInteret" class="form-control"
+                                   min="0" max="100" step="0.01"
+                                   value="@pret.TauxInteret" required />
+                        </div>
+
+                        <button type="submit" class="btn btn-success">
+                            Valider
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-md-6">
+                    <h2 class="h6">Rejeter la demande</h2>
+
+                    <form asp-action="Rejeter" asp-route-id="@pret.Id"
+                          method="post">
+                        <div class="mb-2">
+                            <label for="motif" class="form-label">
+                                Motif de rejet (obligatoire)
+                            </label>
+
+                            <textarea id="motif" name="motif" rows="2"
+                                      maxlength="500" class="form-control"
+                                      required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger">
+                            Rejeter
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (User.IsInRole("admin") && pret.Statut == "Valide")
+{
+    <form asp-action="Debloquer" asp-route-id="@pret.Id" method="post"
+          class="mb-4">
+        <div class="alert alert-info" role="status">
+            La validation est acquise. Le déblocage crédite le compte
+            client et génère automatiquement l'échéancier.
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Débloquer le prêt
+        </button>
+    </form>
+}
+
+<h2>Échéancier</h2>
+
+@if (!Model.Echeances.Any())
+{
+    <p class="text-muted">
+        Aucun échéancier : il sera généré lors du déblocage du prêt.
+    </p>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-sm table-striped align-middle">
+            <thead>
+                <tr>
+                    <th scope="col">N°</th>
+                    <th scope="col">Date d'échéance</th>
+                    <th scope="col" class="text-end">Capital</th>
+                    <th scope="col" class="text-end">Intérêts</th>
+                    <th scope="col" class="text-end">Total</th>
+                    <th scope="col" class="text-end">Pénalité</th>
+                    <th scope="col" class="text-end">Solde restant</th>
+                    <th scope="col">Statut</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var echeance in Model.Echeances)
+                {
+                    <tr>
+                        <td>@echeance.NumeroEcheance</td>
+                        <td>@echeance.DateEcheance.ToString("dd/MM/yyyy")</td>
+                        <td class="text-end">
+                            @echeance.Capital.ToString("N2")
+                        </td>
+                        <td class="text-end">
+                            @echeance.Interet.ToString("N2")
+                        </td>
+                        <td class="text-end">
+                            @echeance.MontantTotal.ToString("N2")
+                        </td>
+                        <td class="text-end">
+                            @echeance.Penalite.ToString("N2")
+                        </td>
+                        <td class="text-end">
+                            @echeance.SoldeRestant.ToString("N2")
+                        </td>
+                        <td>
+                            @{
+                                var couleurEcheance = echeance.Statut switch
+                                {
+                                    "Payee" => "bg-success",
+                                    "EnRetard" => "bg-danger",
+                                    "Annulee" => "bg-secondary",
+                                    _ => "bg-warning text-dark"
+                                };
+                            }
+
+                            <span class="badge @couleurEcheance">
+                                @echeance.Statut
+                            </span>
+                        </td>
+                        <td>
+                            @if ((pret.Statut == "EnCours" ||
+                                  pret.Statut == "Impaye") &&
+                                 echeance.Statut != "Payee" &&
+                                 echeance.Statut != "Annulee" &&
+                                 (User.IsInRole("admin") ||
+                                  User.IsInRole("gestionnaire") ||
+                                  User.IsInRole("guichetier")))
+                            {
+                                <form asp-action="Rembourser"
+                                      asp-route-id="@pret.Id" method="post">
+                                    <input type="hidden" name="echeanceId"
+                                           value="@echeance.Id" />
+
+                                    <button type="submit"
+                                            class="btn btn-sm btn-success">
+                                        Rembourser
+                                    </button>
+                                </form>
+                            }
+                            else if (echeance.DatePaiement.HasValue)
+                            {
+                                <small class="text-muted">
+                                    @echeance.DatePaiement.Value
+                                        .ToString("dd/MM/yyyy")
+                                </small>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+            <tfoot>
+                <tr class="fw-bold">
+                    <td colspan="2">Totaux</td>
+                    <td class="text-end">@Model.TotalCapital.ToString("N2")</td>
+                    <td class="text-end">@Model.TotalInteret.ToString("N2")</td>
+                    <td class="text-end">@Model.TotalMensualites.ToString("N2")</td>
+                    <td colspan="4"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <p class="text-muted">
+        @Model.EcheancesPayees échéance(s) payée(s),
+        @Model.EcheancesEnRetard en retard.
+    </p>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Retour à la liste</a>

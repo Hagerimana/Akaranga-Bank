@@ -1,0 +1,463 @@
+:root {
+    --ak-primary: #0b3d66;
+    --ak-primary-600: #0d4b7d;
+    --ak-accent: #d4a017;
+    --ak-bg: #f4f6f9;
+    --ak-surface: #ffffff;
+    --ak-text: #1f2937;
+    --ak-muted: #6b7280;
+    --ak-border: #e5e7eb;
+    --ak-sidebar: #0b3d66;
+    --ak-sidebar-text: #dbeafe;
+    --ak-sidebar-hover: rgba(255, 255, 255, .12);
+    --ak-shadow: 0 .5rem 1.25rem rgba(15, 23, 42, .08);
+    --ak-radius: .75rem;
+}
+
+[data-theme="dark"] {
+    --ak-bg: #0f172a;
+    --ak-surface: #111827;
+    --ak-text: #e5e7eb;
+    --ak-muted: #9ca3af;
+    --ak-border: #1f2937;
+    --ak-sidebar: #020617;
+    --ak-sidebar-text: #cbd5e1;
+    --ak-sidebar-hover: rgba(255, 255, 255, .08);
+    --ak-shadow: 0 .5rem 1.5rem rgba(0, 0, 0, .35);
+}
+
+body {
+    background: var(--ak-bg);
+    color: var(--ak-text);
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.ak-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    width: 270px;
+    background: var(--ak-sidebar);
+    color: var(--ak-sidebar-text);
+    z-index: 1040;
+    display: flex;
+    flex-direction: column;
+    transition: transform .25s ease, width .25s ease;
+}
+
+.ak-brand {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    text-decoration: none;
+    color: #fff;
+}
+
+.ak-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--ak-accent), #f7d774);
+    color: #0b3d66;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    flex: 0 0 auto;
+}
+
+.ak-brand-title {
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.ak-brand-sub {
+    font-size: .75rem;
+    opacity: .75;
+}
+
+.ak-nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem .75rem;
+}
+
+.ak-nav-title {
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    opacity: .55;
+    margin: 1rem .5rem .4rem;
+}
+
+.ak-nav-link {
+    display: flex;
+    align-items: center;
+    gap: .7rem;
+    color: var(--ak-sidebar-text);
+    padding: .65rem .75rem;
+    border-radius: .6rem;
+    text-decoration: none;
+    font-size: .925rem;
+    transition: background .15s ease, color .15s ease;
+}
+
+.ak-nav-link:hover,
+.ak-nav-link:focus-visible {
+    background: var(--ak-sidebar-hover);
+    color: #fff;
+}
+
+.ak-nav-link.active {
+    background: rgba(212, 160, 23, .18);
+    color: #fff;
+    box-shadow: inset 3px 0 0 var(--ak-accent);
+}
+
+.ak-nav-link i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Main area */
+.ak-main {
+    margin-left: 270px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    transition: margin-left .25s ease;
+}
+
+.ak-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: color-mix(in srgb, var(--ak-surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--ak-border);
+    padding: .75rem 1.25rem;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: .75rem;
+    min-height: 60px;
+}
+
+.ak-topbar > .flex-grow-1 {
+    min-width: 0;
+}
+
+/* Menu utilisateur aligné horizontalement dans le bandeau */
+.ak-topbar .ak-user-nav {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: .25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    min-width: 0;
+}
+
+.ak-topbar .ak-user-nav .nav-item {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+.ak-topbar .ak-user-nav .nav-link {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    padding: .375rem .6rem;
+    color: var(--ak-text);
+    white-space: nowrap;
+    line-height: 1.25;
+}
+
+.ak-topbar .ak-user-nav .nav-link:hover,
+.ak-topbar .ak-user-nav .nav-link:focus-visible {
+    color: var(--ak-primary);
+    background: color-mix(in srgb, var(--ak-text) 8%, transparent);
+    border-radius: .5rem;
+}
+
+.ak-topbar .ak-user-nav .ak-user-name-text {
+    display: inline-block;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
+
+.ak-topbar .ak-user-nav form {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.ak-topbar .ak-user-nav .btn-link {
+    text-decoration: none;
+    background: transparent;
+    border: 0;
+}
+
+.ak-content {
+    padding: 1.5rem;
+    flex: 1;
+}
+
+.ak-card {
+    background: var(--ak-surface);
+    border: 1px solid var(--ak-border);
+    border-radius: var(--ak-radius);
+    box-shadow: var(--ak-shadow);
+}
+
+/* Sidebar collapsed on desktop */
+body.ak-sidebar-collapsed .ak-sidebar {
+    transform: translateX(-100%);
+}
+
+body.ak-sidebar-collapsed .ak-main {
+    margin-left: 0;
+}
+
+/* Mobile */
+.ak-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, .55);
+    z-index: 1035;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .2s ease;
+}
+
+body.ak-sidebar-open .ak-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (max-width: 991.98px) {
+    .ak-sidebar {
+        transform: translateX(-100%);
+        width: 290px;
+    }
+
+    .ak-main {
+        margin-left: 0;
+    }
+
+    body.ak-sidebar-open .ak-sidebar {
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 575.98px) {
+    .ak-content {
+        padding: 1rem;
+    }
+
+    .ak-topbar {
+        padding: .65rem .85rem;
+        gap: .5rem;
+    }
+
+    .ak-topbar .ak-user-nav .nav-link {
+        padding: .3rem .4rem;
+        font-size: .8rem;
+    }
+
+    .ak-topbar .ak-user-nav .ak-user-name-text {
+        max-width: 5.5rem;
+    }
+}
+
+/* Login */
+.ak-login-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 1.5rem;
+    background:
+        radial-gradient(circle at 15% 20%, rgba(212,160,23,.18), transparent 35%),
+        radial-gradient(circle at 85% 80%, rgba(13,75,125,.25), transparent 40%),
+        var(--ak-bg);
+}
+
+.ak-login-card {
+    width: 100%;
+    max-width: 430px;
+    background: var(--ak-surface);
+    border: 1px solid var(--ak-border);
+    border-radius: 1rem;
+    box-shadow: var(--ak-shadow);
+    overflow: hidden;
+}
+
+.ak-login-header {
+    background: linear-gradient(135deg, var(--ak-primary), #123f63);
+    color: #fff;
+    padding: 2rem 1.75rem;
+    text-align: center;
+}
+
+.ak-login-body {
+    padding: 1.75rem;
+}
+
+.ak-input-group-password {
+    position: relative;
+}
+
+.ak-toggle-password {
+    position: absolute;
+    top: 50%;
+    right: .75rem;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    color: var(--ak-muted);
+    z-index: 5;
+}
+
+/* ------------------------------------------------------------------
+   Mode sombre : surcharges des composants non couverts par Bootstrap
+   ------------------------------------------------------------------ */
+[data-bs-theme="dark"] .table-light {
+    --bs-table-bg: #1e293b;
+    --bs-table-color: #e5e7eb;
+    --bs-table-border-color: #334155;
+    --bs-table-striped-bg: #223044;
+    --bs-table-hover-bg: #263449;
+    color: #e5e7eb;
+}
+
+[data-bs-theme="dark"] .table-light > :not(caption) > * > * {
+    color: #e5e7eb;
+    background-color: var(--bs-table-bg);
+    border-color: var(--bs-table-border-color);
+}
+
+[data-bs-theme="dark"] .bg-light {
+    background-color: #1e293b !important;
+    color: #e5e7eb !important;
+}
+
+[data-bs-theme="dark"] .bg-white {
+    background-color: #111827 !important;
+    color: #e5e7eb !important;
+}
+
+[data-bs-theme="dark"] .card-header.bg-light,
+[data-bs-theme="dark"] .card-footer.bg-light {
+    background-color: #1e293b !important;
+    border-color: #334155;
+}
+
+[data-bs-theme="dark"] pre.bg-light,
+[data-bs-theme="dark"] code {
+    color: #e5e7eb;
+}
+
+[data-bs-theme="dark"] .ak-card {
+    background: var(--ak-surface);
+    border-color: var(--ak-border);
+}
+
+[data-bs-theme="dark"] .ak-content .card,
+[data-bs-theme="dark"] .ak-content .modal-content,
+[data-bs-theme="dark"] .ak-content .dropdown-menu,
+[data-bs-theme="dark"] .ak-content .list-group-item,
+[data-bs-theme="dark"] .ak-content .accordion-item {
+    border-color: #1f2937;
+}
+
+[data-bs-theme="dark"] .ak-content .table {
+    --bs-table-color: #e5e7eb;
+    --bs-table-bg: transparent;
+    --bs-table-border-color: #1f2937;
+}
+
+[data-bs-theme="dark"] .ak-content .table > :not(caption) > * > * {
+    box-shadow: none;
+}
+
+[data-bs-theme="dark"] .ak-content .card-header,
+[data-bs-theme="dark"] .ak-content .card-footer {
+    background-color: #16202f;
+    border-color: #1f2937;
+    color: #e5e7eb;
+}
+
+[data-bs-theme="dark"] .ak-content .breadcrumb {
+    --bs-breadcrumb-divider-color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .ak-content .text-muted,
+[data-bs-theme="dark"] .ak-content .text-body-secondary {
+    color: #9ca3af !important;
+}
+
+[data-bs-theme="dark"] .ak-content hr {
+    border-color: #1f2937;
+    opacity: 1;
+}
+
+[data-bs-theme="dark"] .ak-content .form-control,
+[data-bs-theme="dark"] .ak-content .form-select,
+[data-bs-theme="dark"] .ak-content .form-control:disabled,
+[data-bs-theme="dark"] .ak-content .form-control[readonly] {
+    background-color: #0b1220;
+    border-color: #334155;
+    color: #e5e7eb;
+}
+
+[data-bs-theme="dark"] .ak-content .form-control::placeholder {
+    color: #94a3b8;
+}
+
+[data-bs-theme="dark"] .ak-content .input-group-text {
+    background-color: #16202f;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+[data-bs-theme="dark"] .ak-content .page-link {
+    color: #93c5fd;
+}
+
+[data-bs-theme="dark"] .ak-content .btn-outline-secondary {
+    color: #cbd5e1;
+    border-color: #475569;
+}
+
+[data-bs-theme="dark"] .ak-content .btn-outline-secondary:hover,
+[data-bs-theme="dark"] .ak-content .btn-outline-secondary:focus {
+    background-color: #334155;
+    border-color: #64748b;
+    color: #fff;
+}
+
+[data-bs-theme="dark"] .ak-content .bg-body-tertiary {
+    background-color: #16202f !important;
+}
+
+[data-bs-theme="dark"] .ak-content .badge.bg-light {
+    background-color: #1e293b !important;
+    color: #e5e7eb !important;
+}
+
+[data-bs-theme="dark"] .ak-topbar .ak-user-nav .nav-link {
+    color: #e5e7eb;
+}
+
+[data-bs-theme="dark"] .ak-topbar .ak-user-nav .nav-link:hover,
+[data-bs-theme="dark"] .ak-topbar .ak-user-nav .nav-link:focus-visible {
+    color: #fff;
+    background: rgba(255, 255, 255, .08);
+}

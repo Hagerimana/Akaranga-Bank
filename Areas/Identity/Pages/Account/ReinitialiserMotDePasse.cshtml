@@ -1,0 +1,49 @@
+@page
+@model ReinitialiserMotDePasseModel
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Nouveau mot de passe";
+    ViewData["Subtitle"] = "Définissez votre nouveau mot de passe " +
+        "(minimum 12 caractères, avec majuscule, minuscule, chiffre et caractère spécial).";
+}
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger login-validation" role="alert"></div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Password" class="form-label login-label">Nouveau mot de passe</label>
+
+        <div class="login-password-wrapper">
+            <input asp-for="Input.Password" type="password" class="form-control login-input login-password-input"
+                   autocomplete="new-password" required />
+            <button type="button" class="login-password-toggle" data-toggle-password="Input_Password">Afficher</button>
+        </div>
+
+        <span asp-validation-for="Input.Password" class="text-danger small"></span>
+    </div>
+
+    <div class="mb-4">
+        <label asp-for="Input.ConfirmPassword" class="form-label login-label">Confirmer le mot de passe</label>
+
+        <div class="login-password-wrapper">
+            <input asp-for="Input.ConfirmPassword" type="password" class="form-control login-input login-password-input"
+                   autocomplete="new-password" required />
+            <button type="button" class="login-password-toggle" data-toggle-password="Input_ConfirmPassword">Afficher</button>
+        </div>
+
+        <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+    </div>
+
+    <button type="submit" class="login-submit">
+        Enregistrer le mot de passe
+        <span aria-hidden="true">→</span>
+    </button>
+
+    <p class="login-help">
+        <a asp-page="./Login">Revenir à la connexion</a>
+    </p>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

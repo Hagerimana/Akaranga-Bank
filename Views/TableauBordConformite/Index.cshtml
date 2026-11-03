@@ -1,0 +1,231 @@
+@model AkarangaBankMvc.Web.ViewModels.TableauBordConformiteViewModel
+
+@{
+    ViewData["Title"] = "Tableau de bord conformité";
+}
+
+<h1>Tableau de bord conformité</h1>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card text-bg-primary h-100">
+            <div class="card-body">
+                <h2 class="h5">Alertes ouvertes</h2>
+                <p class="display-6 mb-0">@Model.AlertesOuvertes</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-bg-warning h-100">
+            <div class="card-body">
+                <h2 class="h5">En cours</h2>
+                <p class="display-6 mb-0">@Model.AlertesEnCours</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-bg-success h-100">
+            <div class="card-body">
+                <h2 class="h5">Traitées</h2>
+                <p class="display-6 mb-0">@Model.AlertesTraitees</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card text-bg-secondary h-100">
+            <div class="card-body">
+                <h2 class="h5">Classées</h2>
+                <p class="display-6 mb-0">@Model.AlertesClassees</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h2 class="h5 mb-0">Alertes par niveau</h2>
+            </div>
+
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Faible</span>
+                        <strong>@Model.AlertesFaibles</strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Moyen</span>
+                        <strong>@Model.AlertesMoyennes</strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Élevé</span>
+                        <strong>@Model.AlertesElevees</strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Critique</span>
+                        <strong>@Model.AlertesCritiques</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <h2 class="h5 mb-0">Seuils AML actuels</h2>
+            </div>
+
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Vigilance</span>
+                        <strong>
+                            @Model.SeuilVigilance.ToString("N2") BIF
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Déclaration — dépôt</span>
+                        <strong>
+                            @Model.SeuilDeclarationDepot.ToString("N2") BIF
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Déclaration — retrait</span>
+                        <strong>
+                            @Model.SeuilDeclarationRetrait.ToString("N2") BIF
+                        </strong>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>Blocage</span>
+                        <strong>
+                            @Model.SeuilBlocage.ToString("N2") BIF
+                        </strong>
+                    </li>
+                </ul>
+
+                <a asp-controller="SeuilsAML" asp-action="Index" class="btn btn-outline-primary mt-3">
+                    Gérer les seuils
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h2 class="h5 mb-0">Déclarations CNRF</h2>
+    </div>
+
+    <div class="card-body">
+        <div class="row text-center">
+            <div class="col">
+                <p class="h4 mb-0">@Model.DeclarationsBrouillon</p>
+                <p class="text-muted mb-0">Brouillons</p>
+            </div>
+
+            <div class="col">
+                <p class="h4 mb-0">@Model.DeclarationsValidees</p>
+                <p class="text-muted mb-0">Validées</p>
+            </div>
+
+            <div class="col">
+                <p class="h4 mb-0">@Model.DeclarationsTransmises</p>
+                <p class="text-muted mb-0">Transmises</p>
+            </div>
+
+            <div class="col">
+                <p class="h4 mb-0">@Model.DeclarationsAccusees</p>
+                <p class="text-muted mb-0">Accusées</p>
+            </div>
+        </div>
+
+        <a asp-controller="CNRF" asp-action="Index" class="btn btn-outline-primary mt-3">
+            Ouvrir les déclarations
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">10 dernières alertes</h2>
+
+        <a asp-controller="Conformite" asp-action="Alertes" class="btn btn-sm btn-outline-primary">
+            Toutes les alertes
+        </a>
+    </div>
+
+    <div class="card-body">
+        @if (!Model.AlertesRecentes.Any())
+        {
+            <p class="text-muted mb-0">
+                Aucune alerte enregistrée.
+            </p>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date UTC</th>
+                            <th scope="col">Client</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Niveau</th>
+                            <th scope="col">Statut</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var alerte in Model.AlertesRecentes)
+                        {
+                            <tr>
+                                <td>
+                                    @alerte.DateAlerte.ToString("dd/MM/yyyy HH:mm")
+                                </td>
+
+                                <td>
+                                    @alerte.Client.Nom @alerte.Client.Prenom
+                                </td>
+
+                                <td>@alerte.TypeAlerte</td>
+
+                                <td>
+                                    <span class="badge @(alerte.Niveau switch
+                                          {
+                                              "Critique" => "bg-danger",
+                                              "Eleve" => "bg-warning text-dark",
+                                              "Moyen" => "bg-info text-dark",
+                                              _ => "bg-secondary"
+                                          })">
+                                        @alerte.Niveau
+                                    </span>
+                                </td>
+
+                                <td>@alerte.Statut</td>
+
+                                <td>
+                                    <a asp-controller="Conformite" asp-action="Details" asp-route-id="@alerte.Id"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Détails
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
