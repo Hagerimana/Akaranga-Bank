@@ -3,6 +3,7 @@ using MailKit.Security;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using System.Net.Http.Json;
 using AkarangaBankMvc.Web.Models;
 
 namespace AkarangaBankMvc.Web.Services.Email;
@@ -13,6 +14,8 @@ namespace AkarangaBankMvc.Web.Services.Email;
 /// </summary>
 public class SmtpEmailSender : IAppEmailSender, IEmailSender<ApplicationUser>
 {
+    private static readonly HttpClient Http = new() { Timeout = TimeSpan.FromSeconds(20) };
+
     private readonly EmailOptions _options;
     private readonly ILogger<SmtpEmailSender> _logger;
 
@@ -40,6 +43,12 @@ public class SmtpEmailSender : IAppEmailSender, IEmailSender<ApplicationUser>
             throw new InvalidOperationException(
                 "Configuration email incomplète. Renseignez Email:SmtpHost et Email:FromEmail " +
                 "dans les user secrets du projet.");
+        }
+
+        if (_options.UtiliseApiHttp)
+        {
+            await SendViaBrevoApiAsync(destinataire, sujet, contenuHtml, cancellationToken);
+            return;
         }
 
         var message = new MimeMessage();
@@ -85,6 +94,44 @@ public class SmtpEmailSender : IAppEmailSender, IEmailSender<ApplicationUser>
             _logger.LogError(ex, "Échec de l'envoi de l'email '{Sujet}' à {Destinataire}.", sujet, destinataire);
             throw new InvalidOperationException(
                 "L'envoi de l'email a échoué. Vérifiez la configuration SMTP.", ex);
+        }
+    }
+
+    private async Task SendViaBrevoApiAsync(
+        string destinataire,
+        string sujet,
+        string contenuHtml,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            using var request = new HttpRequestMessage(
+                HttpMethod.Post, "https://api.brevo.com/v3/smtp/email");
+            request.Headers.Add("api-key", _options.BrevoApiKey);
+            request.Content = JsonContent.Create(new
+            {
+                sender = new { name = _options.FromName, email = _options.FromEmail },
+                to = new[] { new { email = destinataire } },
+                subject = sujet,
+                htmlContent = contenuHtml
+            });
+
+            using var response = await Http.SendAsync(request, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync(cancellationToken);
+                throw new HttpRequestException(
+                    $"Brevo a répondu {(int)response.StatusCode} : {body}");
+            }
+
+            _logger.LogInformation("Email '{Sujet}' envoyé à {Destinataire} via l'API Brevo.", sujet, destinataire);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Échec de l'envoi de l'email '{Sujet}' à {Destinataire}.", sujet, destinataire);
+            throw new InvalidOperationException(
+                "L'envoi de l'email a échoué. Vérifiez la configuration email.", ex);
         }
     }
 
