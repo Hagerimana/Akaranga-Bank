@@ -83,12 +83,6 @@ public static class AdminInitializer
 
             if (siege is null)
             {
-                if (!environment.IsDevelopment())
-                {
-                    throw new InvalidOperationException(
-                        "Aucune agence siège : initialise les agences avant de créer l'administrateur.");
-                }
-
                 var agenceBjm = await context.Agences
                     .SingleOrDefaultAsync(a => a.Code == "AKR-BJM");
 
