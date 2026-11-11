@@ -16,6 +16,14 @@ public class EmailOptions
     public string FromName { get; set; } = "Akaranga Bank";
     public string FromEmail { get; set; } = string.Empty;
 
-    public bool EstConfigure => !string.IsNullOrWhiteSpace(SmtpHost)
-        && !string.IsNullOrWhiteSpace(FromEmail);
+    /// <summary>
+    /// Clé API Brevo. Si elle est renseignée, les emails partent via HTTPS
+    /// (utile quand l'hébergeur bloque les ports SMTP sortants).
+    /// </summary>
+    public string BrevoApiKey { get; set; } = string.Empty;
+
+    public bool UtiliseApiHttp => !string.IsNullOrWhiteSpace(BrevoApiKey);
+
+    public bool EstConfigure => !string.IsNullOrWhiteSpace(FromEmail)
+        && (UtiliseApiHttp || !string.IsNullOrWhiteSpace(SmtpHost));
 }
